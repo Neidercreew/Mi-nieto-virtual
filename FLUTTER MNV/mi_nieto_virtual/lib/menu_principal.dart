@@ -12,8 +12,6 @@ class MenuPrincipalScreen extends StatefulWidget {
 class _MenuPrincipalScreenState extends State<MenuPrincipalScreen> {
   String nombreUsuario = "Usuario"; // Nombre por defecto
 
-  final PageController _pageController = PageController();
-
   @override
   void initState() {
     super.initState();
@@ -24,7 +22,6 @@ class _MenuPrincipalScreenState extends State<MenuPrincipalScreen> {
   Future<void> _cargarNombre() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
-      // 'nombre_usuario' debe ser el mismo nombre que usamos en registro_nombre.dart
       nombreUsuario = prefs.getString('nombre_usuario') ?? "Usuario";
     });
   }
@@ -33,57 +30,45 @@ class _MenuPrincipalScreenState extends State<MenuPrincipalScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FE),
-      body: PageView(
-        controller: _pageController,
-        scrollDirection: Axis.vertical,
+      body: Column(
         children: [
-          // Piso uno: menú principal
-          Column(
-            children: [
-              _buildHeader(nombreUsuario), // Pasamos el nombre al Header
-              Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.all(20),
-                  children: [
-                    // 👇 CAMBIO: se le agrega onTap para navegar a TutorialesScreen
-                    _buildMenuCard(
+          _buildHeader(nombreUsuario),
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.all(20),
+              children: [
+                _buildMenuCard(
+                  context,
+                  "Tutoriales",
+                  "Aprende a usar tu celular paso a paso",
+                  Icons.menu_book_rounded,
+                  const Color(0xFF4CAF50),
+                  onTap: () {
+                    Navigator.push(
                       context,
-                      "Tutoriales",
-                      "Aprende a usar tu celular paso a paso",
-                      Icons.menu_book_rounded,
-                      const Color(0xFF4CAF50),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const TutorialesScreen(),
-                          ),
-                        );
-                      },
-                    ),
-                    // Los demás botones sin cambios por ahora
-                    _buildMenuCard(
-                      context,
-                      "Detector de Fraude",
-                      "Verifica si un mensaje es peligroso",
-                      Icons.security_update_warning_rounded,
-                      const Color(0xFFE53935),
-                    ),
-                    _buildMenuCard(
-                      context,
-                      "Mensajes de Ánimo",
-                      "Palabras para alegrar tu día",
-                      Icons.volunteer_activism_rounded,
-                      const Color(0xFFEC407A),
-                    ),
-                    _buildBannerProgreso(),
-                  ],
+                      MaterialPageRoute(
+                        builder: (_) => const TutorialesScreen(),
+                      ),
+                    );
+                  },
                 ),
-              ),
-            ],
+                _buildMenuCard(
+                  context,
+                  "Detector de Fraude",
+                  "Verifica si un mensaje es peligroso",
+                  Icons.security_update_warning_rounded,
+                  const Color(0xFFE53935),
+                ),
+                _buildMenuCard(
+                  context,
+                  "Mensajes de Ánimo",
+                  "Palabras para alegrar tu día",
+                  Icons.volunteer_activism_rounded,
+                  const Color(0xFFEC407A),
+                ),
+              ],
+            ),
           ),
-          // Piso 2: pantalla de progreso
-          _buildPantallaProgreso(),
         ],
       ),
     );
@@ -131,7 +116,6 @@ class _MenuPrincipalScreenState extends State<MenuPrincipalScreen> {
     );
   }
 
-  // 👇 CAMBIO: se agrega el parámetro opcional onTap
   Widget _buildMenuCard(
     BuildContext context,
     String titulo,
@@ -155,7 +139,6 @@ class _MenuPrincipalScreenState extends State<MenuPrincipalScreen> {
       ),
       child: InkWell(
         borderRadius: BorderRadius.circular(25),
-        // 👇 Si le pasan onTap lo usa, si no imprime en consola
         onTap: onTap ?? () => print("Tap en $titulo"),
         child: Padding(
           padding: const EdgeInsets.all(20),
@@ -200,60 +183,6 @@ class _MenuPrincipalScreenState extends State<MenuPrincipalScreen> {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildBannerProgreso() {
-    return GestureDetector(
-      onTap: () {
-        // Sube a la pantalla de progreso
-        _pageController.animateToPage(
-          1,
-          duration: const Duration(milliseconds: 600),
-          curve: Curves.easeInOut,
-        );
-      },
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: const Color(0xFF6200EE),
-          borderRadius: BorderRadius.circular(30),
-        ),
-        child: const Text(
-          "Toca aquí para ver tu progreso",
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-            fontSize: 18,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
-  }
-
-  // La pantalla que aparece al subir con scroll vertical
-  Widget _buildPantallaProgreso() {
-    return Container(
-      color: Colors.white,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Text(
-            "Interface de Progreso",
-            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () => _pageController.animateToPage(
-              0,
-              duration: const Duration(milliseconds: 600),
-              curve: Curves.easeInOut,
-            ),
-            child: const Text("Volver al Menú"),
-          ),
-        ],
       ),
     );
   }

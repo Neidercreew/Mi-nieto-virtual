@@ -17,7 +17,9 @@ class TutorialApp {
   });
 }
 
-//pantalla principal
+// ─────────────────────────────────────────────────────────────────
+//  PANTALLA PRINCIPAL
+// ─────────────────────────────────────────────────────────────────
 class TutorialesScreen extends StatefulWidget {
   const TutorialesScreen({super.key});
 
@@ -137,7 +139,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
             child: Text(
               '¿Sobre qué quieres aprender hoy?',
               style: TextStyle(
-                color: Color.fromARGB(255, 27, 27, 29),
+                color: Color(0xFF555577),
                 fontSize: 25,
                 fontWeight: FontWeight.w400,
               ),
@@ -199,7 +201,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
             style: TextStyle(
               color: selected ? Colors.white : const Color(0xFF6B4EFF),
               fontWeight: FontWeight.w600,
-              fontSize: 23,
+              fontSize: 15,
             ),
           ),
         ),
@@ -318,7 +320,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
   // ── BOTTOM NAV ──────────────────────────────────────────────────
   Widget _buildBottomNav() {
     return Container(
-      height: 72,
+      height: 80, // un poco más alto para que el botón grande respire
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
@@ -332,30 +334,64 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           _navIcon(Icons.home_rounded, 0),
           _navIcon(Icons.calendar_today_rounded, 1),
-          // Botón central morado
+
+          // ── BOTÓN CENTRAL: amarillo ámbar, más grande, escudo + lupa ──
           GestureDetector(
-            onTap: () {},
+            onTap: () {
+              // Aquí conectas la navegación al Detector de Fraude cuando lo tengas listo
+              // Navigator.push(context, MaterialPageRoute(builder: (_) => DetectorFraudeScreen()));
+            },
             child: Container(
-              width: 54,
-              height: 54,
-              decoration: const BoxDecoration(
-                color: Color(0xFF6B4EFF),
+              width: 68,   // más grande que el original (era 54)
+              height: 68,
+              decoration: BoxDecoration(
+                // Amarillo ámbar
+                color: const Color(0xFFFFB300),
                 shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Color(0x446B4EFF),
-                    blurRadius: 12,
-                    offset: Offset(0, 4),
+                    color: const Color(0xFFFFB300).withOpacity(0.45),
+                    blurRadius: 16,
+                    offset: const Offset(0, 5),
                   ),
                 ],
               ),
-              child: const Icon(Icons.add_rounded,
-                  color: Colors.white, size: 30),
+              // Stack para superponer el escudo y la lupa
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  // Escudo de fondo
+                  const Icon(
+                    Icons.shield_rounded,
+                    color: Colors.white,
+                    size: 40,
+                  ),
+                  // Lupa encima, desplazada un poco abajo-derecha para que se vea bien
+                  Positioned(
+                    bottom: 12,
+                    right: 10,
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: const BoxDecoration(
+                        color: Color(0xFFFFB300), // mismo fondo para "recortar" el escudo
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.search_rounded,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
+
           _navIcon(Icons.menu_book_rounded, 3),
           _navIcon(Icons.person_rounded, 4),
         ],
