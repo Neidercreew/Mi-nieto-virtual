@@ -1,3 +1,5 @@
+import 'package:shared_preferences/shared_preferences.dart';//permite guardar cambios pequeños, como el nivel del usuario, sin necesidad de una base de datos completa
+import 'seleccion_nivel.dart';
 import 'package:flutter/material.dart';
 
 // ─────────────────────────────────────────────────────────────────
@@ -28,12 +30,29 @@ class TutorialesScreen extends StatefulWidget {
 }
 
 class _TutorialesScreenState extends State<TutorialesScreen> {
-  int _tabSeleccionado = 0; // 0 = Aplicaciones, 1 = Mi Progreso
-  int _navIndex = 0;
+ 
+// ── Verificación de nivel al abrir la pantalla ──────────────
+  @override
+  void initState() {
+    super.initState();
+    _verificarNivel();
+  }
 
-  // ── Lista de apps ─────────────────────────────────────────────
-  // Reemplaza 'imagenAsset' con la ruta real de tus imágenes/íconos.
-  // Si usas iconos de paquetes (font_awesome_flutter, etc.) adapta el widget.
+  Future<void> _verificarNivel() async {
+    final prefs = await SharedPreferences.getInstance();
+    final nivel = prefs.getString('nivel_usuario');
+
+    if (nivel == null && mounted) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => const SeleccionNivelScreen(),
+        ),
+      );
+    }
+  }
+  int _navIndex = 0;
+  int _tabSeleccionado = 0;
   final List<TutorialApp> _apps = [
     TutorialApp(
       nombre: 'Gmail// correo',
