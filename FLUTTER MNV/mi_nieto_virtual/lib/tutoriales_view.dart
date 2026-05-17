@@ -2,26 +2,24 @@ import 'package:shared_preferences/shared_preferences.dart';//permite guardar ca
 import 'seleccion_nivel.dart';
 import 'package:flutter/material.dart';
 
-// ─────────────────────────────────────────────────────────────────
+
 //  MODELO DE TUTORIAL
-// ─────────────────────────────────────────────────────────────────
 class TutorialApp {
-  final String nombre;
+  final String nombre; // nombre de la app o función, ej: 'Gmail', 'Teléfono', etc.
   final String imagenAsset; // ruta a tu asset, ej: 'assets/icons/gmail.png'
   final Color fondo;
+  final String nivel; 
   final VoidCallback? onTap;
 
   const TutorialApp({
     required this.nombre,
     required this.imagenAsset,
     required this.fondo,
+    required this.nivel,
     this.onTap,
   });
 }
-
-// ─────────────────────────────────────────────────────────────────
 //  PANTALLA PRINCIPAL
-// ─────────────────────────────────────────────────────────────────
 class TutorialesScreen extends StatefulWidget {
   const TutorialesScreen({super.key});
 
@@ -38,7 +36,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
     _verificarNivel();
   }
 
-  Future<void> _verificarNivel() async {
+Future<void> _verificarNivel() async {
     final prefs = await SharedPreferences.getInstance();
     final nivel = prefs.getString('nivel_usuario');
 
@@ -49,43 +47,76 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
           builder: (_) => const SeleccionNivelScreen(),
         ),
       );
+    } else {
+      // ← ESTO ES LO NUEVO: carga el nivel en la variable
+      setState(() {
+        _nivelUsuario = nivel ?? 'basico';
+      });
     }
   }
+  String _nivelUsuario = 'basico'; 
   int _navIndex = 0;
   int _tabSeleccionado = 0;
-  final List<TutorialApp> _apps = [
-    TutorialApp(
-      nombre: 'Gmail// correo',
-      imagenAsset: 'assets/icons/gmail.png',
-      fondo: const Color(0xFFFFFFFF),
-    ),
-    TutorialApp(
-      nombre: 'Whatsapp',
-      imagenAsset: 'assets/icons/whatsapp.png',
-      fondo: const Color(0xFFFFFFFF),
-    ),
-    TutorialApp(
-      nombre: 'Teléfono de tu celular',
-      imagenAsset: 'assets/icons/telefono.png',
-      fondo: const Color(0xFFFFFFFF),
-    ),
-    TutorialApp(
-      nombre: 'Nequi',
-      imagenAsset: 'assets/icons/nequi.png',
-      fondo: const Color(0xFFFFFFFF),
-    ),
-    TutorialApp(
-      nombre: 'Mensajes de tu celular',
-      imagenAsset: 'assets/icons/mensajes.png',
-      fondo: const Color(0xFFFFFFFF),
-    ),
-    TutorialApp(
-      nombre: 'Cámara de tu celular',
-      imagenAsset: 'assets/icons/camara.png',
-      fondo: const Color(0xFFFFFFFF),
-    ),
-  ];
-
+ final List<TutorialApp> _apps = [
+  TutorialApp(
+    nombre: 'Conociendo tu celular',
+    imagenAsset: 'assets/icons/celular.png',
+    fondo: const Color(0xFFFFFFFF),
+    nivel: 'basico',
+  ),
+  TutorialApp(
+    nombre: 'Cómo navegar',
+    imagenAsset: 'assets/icons/navegar.png',
+    fondo: const Color(0xFFFFFFFF),
+    nivel: 'basico',
+  ),
+  TutorialApp(
+    nombre: 'Cámara de tu celular',
+    imagenAsset: 'assets/icons/camara.png',
+    fondo: const Color(0xFFFFFFFF),
+    nivel: 'basico',
+  ),
+  TutorialApp(
+    nombre: 'Teléfono de tu celular',
+    imagenAsset: 'assets/icons/telefono.png',
+    fondo: const Color(0xFFFFFFFF),
+    nivel: 'basico',
+  ),
+  TutorialApp(
+    nombre: 'Whatsapp',
+    imagenAsset: 'assets/icons/whatsapp.png',
+    fondo: const Color(0xFFFFFFFF),
+    nivel: 'intermedio',
+  ),
+  TutorialApp(
+    nombre: 'Gmail// correo',
+    imagenAsset: 'assets/icons/gmail.png',
+    fondo: const Color(0xFFFFFFFF),
+    nivel: 'intermedio',
+  ),
+  TutorialApp(
+    nombre: 'Mensajes de tu celular',
+    imagenAsset: 'assets/icons/mensajes.png',
+    fondo: const Color(0xFFFFFFFF),
+    nivel: 'intermedio',
+  ),
+  TutorialApp(
+    nombre: 'Calendario',
+    imagenAsset: 'assets/icons/calendario.png',
+    fondo: const Color(0xFFFFFFFF),
+    nivel: 'intermedio',
+  ),
+  TutorialApp(
+    nombre: 'Nequi',
+    imagenAsset: 'assets/icons/nequi.png',
+    fondo: const Color(0xFFFFFFFF),
+    nivel: 'avanzado',
+  ),
+];
+// Lista filtrada según nivel del usuario
+List<TutorialApp> get _appsFiltradas {
+    return _apps.where((a) => a.nivel == _nivelUsuario).toList();
+  }
   // ── Colores de fondo de cada tarjeta (igual que en el prototipo) ──
   final List<Color> _coloresTarjeta = [
     const Color(0xFFE8F4FD), // gmail  – azul muy claro
@@ -120,6 +151,27 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
           ),
         ),
         actions: [
+          // Botón para cambiar nivel
+        IconButton(
+          icon: const Icon(Icons.tune_rounded,
+            color: Color(0xFF6B4EFF), size: 24),
+          tooltip: 'Cambiar nivel',
+          onPressed: () async {
+            // Borra el nivel guardado
+            final prefs = await SharedPreferences.getInstance();
+            await prefs.remove('nivel_usuario');
+
+            // Navega a selección de nivel
+            if (context.mounted) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const SeleccionNivelScreen(),
+                 ),
+              );
+            }
+          },
+        ),
           // Ícono de notificaciones (campana con punto rojo)
           Padding(
             padding: const EdgeInsets.only(right: 16),
@@ -228,13 +280,13 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
     );
   }
 
-  // ── GRID DE APLICACIONES ────────────────────────────────────────
+  // ── GRID DE APLICACIONES
   Widget _buildGridAplicaciones() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: GridView.builder(
         physics: const BouncingScrollPhysics(),
-        itemCount: _apps.length,
+        itemCount: _appsFiltradas.length,
         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
           crossAxisSpacing: 14,
@@ -242,7 +294,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
           childAspectRatio: 1.0,
         ),
         itemBuilder: (context, i) {
-          return _buildTarjetaApp(_apps[i], _coloresTarjeta[i]);
+          return _buildTarjetaApp(_appsFiltradas[i], _coloresTarjeta[i % _coloresTarjeta.length]);
         },
       ),
     );
