@@ -10,18 +10,19 @@ class TutorialBotonesScreen extends StatefulWidget {
 }
 
 class _TutorialBotonesScreenState extends State<TutorialBotonesScreen> {
-  @override
+@override
 void initState() {
   super.initState();
-  HardwareKeyboard.instance.addHandler(_onKey);
+  WidgetsBinding.instance.addPostFrameCallback((_) {
+    HardwareKeyboard.instance.addHandler(_onKey);
+    HardwareKeyboard.instance.removeHandler(_onKey); // Asegura que no se dupliquen handlers
+  });
 }
-
 @override
 void dispose() {
   HardwareKeyboard.instance.removeHandler(_onKey);
   super.dispose();
 }
-
 bool _onKey(KeyEvent event) {
   final botonActual = _pasos[_pasoActual]['boton'];
 
