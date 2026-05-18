@@ -1,6 +1,8 @@
 import 'package:shared_preferences/shared_preferences.dart';//permite guardar cambios pequeños, como el nivel del usuario, sin necesidad de una base de datos completa
 import 'seleccion_nivel.dart';
+import 'detalle_tutorial.dart';
 import 'package:flutter/material.dart';
+import 'tutorial_botones.dart';
 
 
 //  MODELO DE TUTORIAL
@@ -57,13 +59,19 @@ Future<void> _verificarNivel() async {
   String _nivelUsuario = 'basico'; 
   int _navIndex = 0;
   int _tabSeleccionado = 0;
- final List<TutorialApp> _apps = [
-  TutorialApp(
-    nombre: 'Conociendo tu celular',
-    imagenAsset: 'assets/icons/celular.png',
-    fondo: const Color(0xFFFFFFFF),
-    nivel: 'basico',
+ List<TutorialApp> get _apps => [
+TutorialApp(
+  nombre: 'Conociendo tu celular',
+  imagenAsset: 'assets/icons/celular.png',
+  fondo: const Color(0xFFFFFFFF),
+  nivel: 'basico',
+  onTap: () => Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (_) => const TutorialBotonesScreen(),
+    ),
   ),
+),
   TutorialApp(
     nombre: 'Cómo navegar',
     imagenAsset: 'assets/icons/navegar.png',
@@ -484,14 +492,35 @@ List<TutorialApp> get _appsFiltradas {
 
   // ── HELPER ──────────────────────────────────────────────────────
   void _abrirTutorial(TutorialApp app) {
-    // Navega a la pantalla del tutorial específico
-    // Navigator.push(context, MaterialPageRoute(builder: (_) => DetalleTutorialScreen(app: app)));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Abriendo tutorial: ${app.nombre}'),
-        backgroundColor: const Color(0xFF6B4EFF),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    // Datos de prueba para ver cómo se ve — luego ponés el contenido real
+    final pasosPrueba = [
+      PasoTutorial(
+        titulo: 'Paso 1: Bienvenido',
+        descripcion:
+            'En este tutorial aprenderás a usar ${app.nombre} de manera fácil y sencilla.',
+        imagenAsset: 'assets/pasos/paso1.png',
+      ),
+      const PasoTutorial(
+        titulo: 'Paso 2: Lo primero',
+        descripcion:
+            'Primero busca el ícono en tu pantalla principal y tócalo suavemente con tu dedo.',
+        imagenAsset: 'assets/pasos/paso2.png',
+      ),
+      const PasoTutorial(
+        titulo: 'Paso 3: ¡Lo lograste!',
+        descripcion:
+            '¡Muy bien! Ya sabes el primer paso. Sigue practicando y lo aprenderás rápido.',
+        imagenAsset: 'assets/pasos/paso3.png',
+      ),
+    ];
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => DetalleTutorialScreen(
+          nombreTutorial: app.nombre,
+          pasos: pasosPrueba,
+        ),
       ),
     );
   }
