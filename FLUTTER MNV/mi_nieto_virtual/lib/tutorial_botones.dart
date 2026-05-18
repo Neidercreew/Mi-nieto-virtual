@@ -23,29 +23,49 @@ void dispose() {
 }
 
 bool _onKey(KeyEvent event) {
+  final botonActual = _pasos[_pasoActual]['boton'];
+
   if (event is KeyDownEvent) {
     final key = event.logicalKey;
-    final botonActual = _pasos[_pasoActual]['boton'];
 
+    if (key == LogicalKeyboardKey.audioVolumeUp) {
+      if (botonActual == 'volumen_arriba' ||
+          botonActual == 'volumen_arriba_tap') {
+        _vibrarYAvanzar();
+        return true;
+      }
+    }
+    if (key == LogicalKeyboardKey.audioVolumeDown) {
+      if (botonActual == 'volumen_abajo') {
+        _vibrarYAvanzar();
+        return true;
+      }
+    }
+  if (key == LogicalKeyboardKey.audioVolumeDown &&
+        botonActual == 'volumen_abajo_triple') {
+      _contadorBajar++;
+      if (_contadorBajar >= 3) {
+        _contadorBajar = 0;
+        _vibrarYAvanzar();
+      }
+      return true;
+    }
+
+  }
+
+  if (event is KeyRepeatEvent) {
+    final key = event.logicalKey;
     if (key == LogicalKeyboardKey.audioVolumeUp &&
-        botonActual == 'volumen_arriba') {
-      _vibrarYAvanzar();
-      return true;
-    }
-    if (key == LogicalKeyboardKey.audioVolumeDown &&
-        botonActual == 'volumen_abajo') {
-      _vibrarYAvanzar();
-      return true;
-    }
-    if (key == LogicalKeyboardKey.power &&
-        botonActual == 'power') {
+        botonActual == 'volumen_arriba_hold') {
       _vibrarYAvanzar();
       return true;
     }
   }
+
   return false;
 }
   int _pasoActual = 0;
+  int _contadorBajar = 0;
   bool _mostrarFelicitacion = false;
 
   final List<Map<String, String>> _pasos = [
@@ -62,9 +82,13 @@ bool _onKey(KeyEvent event) {
       'boton': 'volumen_abajo',
     },
     {
-      'instruccion': '¡Perfecto! Ahora toca el\nbotón de APAGAR/ENCENDER 🔴',
-      'boton': 'power',
+     'instruccion': 'Mantén presionado el\nbotón de BAJAR VOLUMEN 🔇\nhasta que vibre 3 veces',
+      'boton': 'volumen_abajo_triple',
     },
+      {
+  'instruccion': 'Este es el botón de\nAPAGAR/ENCENDER 🔴\n¡Si lo presionas\nse apaga la pantalla!',
+  'boton': 'power_explicacion',
+},
   ];
 
   Future<void> _vibrarYAvanzar() async {
@@ -347,20 +371,20 @@ bool _onKey(KeyEvent event) {
             left: 0,
             top: 120,
             child: _buildBoton(
-              activo: botonActivo == 'power',
+              activo: botonActivo == 'power' || botonActivo == 'power_explicacion',
               onTap: botonActivo == 'power' ? _vibrarYAvanzar : null,
               child: Container(
                 width: 14,
                 height: 65,
                 decoration: BoxDecoration(
-                  color: botonActivo == 'power'
+                  color: botonActivo == 'power' || botonActivo == 'power_explicacion'
                       ? const Color(0xFFE53E3E)
                       : const Color(0xFF3A3A5C),
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(8),
                     bottomLeft: Radius.circular(8),
                   ),
-                  boxShadow: botonActivo == 'power'
+                  boxShadow: botonActivo == 'power' || botonActivo == 'power_explicacion'
                       ? [BoxShadow(
                           color: const Color(0xFFE53E3E).withOpacity(0.6),
                           blurRadius: 12,
