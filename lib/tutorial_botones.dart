@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:vibration/vibration.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/services.dart';
+import 'package:vibration/vibration.dart';
+import 'services/api_service.dart'; //  para guardar progreso del tutorial
 
 class TutorialBotonesScreen extends StatefulWidget {
   const TutorialBotonesScreen({super.key});
@@ -10,61 +12,6 @@ class TutorialBotonesScreen extends StatefulWidget {
 }
 
 class _TutorialBotonesScreenState extends State<TutorialBotonesScreen> {
-@override
-void initState() {
-  super.initState();
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    HardwareKeyboard.instance.addHandler(_onKey);
-    HardwareKeyboard.instance.removeHandler(_onKey); // Asegura que no se dupliquen handlers
-  });
-}
-@override
-void dispose() {
-  HardwareKeyboard.instance.removeHandler(_onKey);
-  super.dispose();
-}
-bool _onKey(KeyEvent event) {
-  final botonActual = _pasos[_pasoActual]['boton'];
-
-  if (event is KeyDownEvent) {
-    final key = event.logicalKey;
-
-    if (key == LogicalKeyboardKey.audioVolumeUp) {
-      if (botonActual == 'volumen_arriba' ||
-          botonActual == 'volumen_arriba_tap') {
-        _vibrarYAvanzar();
-        return true;
-      }
-    }
-    if (key == LogicalKeyboardKey.audioVolumeDown) {
-      if (botonActual == 'volumen_abajo') {
-        _vibrarYAvanzar();
-        return true;
-      }
-    }
-  if (key == LogicalKeyboardKey.audioVolumeDown &&
-        botonActual == 'volumen_abajo_triple') {
-      _contadorBajar++;
-      if (_contadorBajar >= 3) {
-        _contadorBajar = 0;
-        _vibrarYAvanzar();
-      }
-      return true;
-    }
-
-  }
-
-  if (event is KeyRepeatEvent) {
-    final key = event.logicalKey;
-    if (key == LogicalKeyboardKey.audioVolumeUp &&
-        botonActual == 'volumen_arriba_hold') {
-      _vibrarYAvanzar();
-      return true;
-    }
-  }
-
-  return false;
-}
   int _pasoActual = 0;
   int _contadorBajar = 0;
   bool _mostrarFelicitacion = false;
@@ -83,23 +30,93 @@ bool _onKey(KeyEvent event) {
       'boton': 'volumen_abajo',
     },
     {
-     'instruccion': 'Mantén presionado el\nbotón de BAJAR VOLUMEN 🔇\nhasta que vibre 3 veces',
+      'instruccion': 'Mantén presionado el\nbotón de BAJAR VOLUMEN 🔇\nhasta que vibre 3 veces',
       'boton': 'volumen_abajo_triple',
     },
-      {
-  'instruccion': 'Este es el botón de\nAPAGAR/ENCENDER 🔴\n¡Si lo presionas\nse apaga la pantalla!',
-  'boton': 'power_explicacion',
-},
+    {
+      'instruccion': 'Este es el botón de\nAPAGAR/ENCENDER 🔴\n¡Si lo presionas\nse apaga la pantalla!',
+      'boton': 'power_explicacion',
+    },
+    {
+      'instruccion': 'Ahora toca el botón de\nSUBIR VOLUMEN una sola vez 👆',
+      'boton': 'volumen_arriba_tap',
+    },
+    {
+      'instruccion': 'Ahora MANTÉN presionado\nel botón de SUBIR VOLUMEN 🔊',
+      'boton': 'volumen_arriba_hold',
+    },
   ];
 
+  bool _handler(KeyEvent event) {
+    if (_mostrarFelicitacion) return false;
+
+    final botonActual = _pasos[_pasoActual]['boton'];
+    final key = event.logicalKey;
+
+    if (event is KeyDownEvent) {
+      if (key == LogicalKeyboardKey.audioVolumeUp) {
+        if (botonActual == 'volumen_arriba' ||
+            botonActual == 'volumen_arriba_tap') {
+          _vibrarYAvanzar();
+          return true;
+        }
+      }
+      if (key == LogicalKeyboardKey.audioVolumeDown) {
+        if (botonActual == 'volumen_abajo') {
+          _vibrarYAvanzar();
+          return true;
+        }
+        if (botonActual == 'volumen_abajo_triple') {
+          _contadorBajar++;
+          if (_contadorBajar >= 3) {
+            _contadorBajar = 0;
+            _vibrarYAvanzar();
+          }
+          return true;
+        }
+      }
+    }
+
+    if (event is KeyRepeatEvent) {
+      if (key == LogicalKeyboardKey.audioVolumeUp &&
+          botonActual == 'volumen_arriba_hold') {
+        _vibrarYAvanzar();
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    HardwareKeyboard.instance.removeHandler(_handler);
+    HardwareKeyboard.instance.addHandler(_handler);
+  }
+
+  @override
+  void dispose() {
+    HardwareKeyboard.instance.removeHandler(_handler);
+    super.dispose();
+  }
+
   Future<void> _vibrarYAvanzar() async {
+    if (_mostrarFelicitacion) return;
+
     try {
       final hasVibrator = await Vibration.hasVibrator();
       if (hasVibrator == true) {
         await Vibration.vibrate(duration: 300);
       }
     } catch (e) {
-      // En emulador no vibra pero sigue funcionando
+      // emulador no vibra
+    }
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('usuario_id');
+    if (userId != null) {
+      await ApiService.guardarPaso(userId, 'conociendo_tu_celular', _pasoActual);
+      print('📍 Paso $_pasoActual guardado para usuario $userId');
     }
 
     setState(() => _mostrarFelicitacion = true);
@@ -121,6 +138,7 @@ bool _onKey(KeyEvent event) {
     final paso = _pasos[_pasoActual];
     final esPrimerPaso = _pasoActual == 0;
     final esUltimoPaso = _pasoActual == _pasos.length - 1;
+    final esPowerExplicacion = paso['boton'] == 'power_explicacion';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF0EEFF),
@@ -171,11 +189,9 @@ bool _onKey(KeyEvent event) {
               ),
               const SizedBox(height: 32),
               Expanded(
-                child: Center(
-                  child: _buildCelular(paso['boton']!),
-                ),
+                child: Center(child: _buildCelular(paso['boton']!)),
               ),
-              if (esPrimerPaso || esUltimoPaso)
+              if (esPrimerPaso || esUltimoPaso || esPowerExplicacion)
                 Padding(
                   padding: const EdgeInsets.all(24),
                   child: GestureDetector(
@@ -197,7 +213,7 @@ bool _onKey(KeyEvent event) {
                       ),
                       child: Center(
                         child: Text(
-                          esUltimoPaso ? '¡Terminé! 🎉' : 'Empezar →',
+                          esUltimoPaso ? '¡Terminé! 🎉' : 'Siguiente →',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 20,
@@ -281,20 +297,15 @@ bool _onKey(KeyEvent event) {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.phone_android_rounded,
-                    color: Colors.white.withOpacity(0.3),
-                    size: 60,
-                  ),
+                  Icon(Icons.phone_android_rounded,
+                      color: Colors.white.withOpacity(0.3), size: 60),
                   const SizedBox(height: 8),
-                  Text(
-                    '10:30',
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.5),
-                      fontSize: 28,
-                      fontWeight: FontWeight.w300,
-                    ),
-                  ),
+                  Text('10:30',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.5),
+                        fontSize: 28,
+                        fontWeight: FontWeight.w300,
+                      )),
                 ],
               ),
             ),
@@ -303,126 +314,103 @@ bool _onKey(KeyEvent event) {
           Positioned(
             right: 0,
             top: 90,
-            child: _buildBoton(
-              activo: botonActivo == 'volumen_arriba',
-              onTap: botonActivo == 'volumen_arriba' ? _vibrarYAvanzar : null,
-              child: Container(
-                width: 14,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: botonActivo == 'volumen_arriba'
-                      ? const Color(0xFF6B4EFF)
-                      : const Color(0xFF3A3A5C),
-                  borderRadius: const BorderRadius.only(
-                    topRight: Radius.circular(8),
-                    bottomRight: Radius.circular(8),
-                  ),
-                  boxShadow: botonActivo == 'volumen_arriba'
-                      ? [BoxShadow(
-                          color: const Color(0xFF6B4EFF).withOpacity(0.6),
-                          blurRadius: 12,
-                        )]
-                      : null,
+            child: Container(
+              width: 14,
+              height: 50,
+              decoration: BoxDecoration(
+                color: (botonActivo == 'volumen_arriba' ||
+                        botonActivo == 'volumen_arriba_tap' ||
+                        botonActivo == 'volumen_arriba_hold')
+                    ? const Color(0xFF6B4EFF)
+                    : const Color(0xFF3A3A5C),
+                borderRadius: const BorderRadius.only(
+                  topRight: Radius.circular(8),
+                  bottomRight: Radius.circular(8),
                 ),
+                boxShadow: (botonActivo == 'volumen_arriba' ||
+                        botonActivo == 'volumen_arriba_tap' ||
+                        botonActivo == 'volumen_arriba_hold')
+                    ? [
+                        BoxShadow(
+                            color: const Color(0xFF6B4EFF).withOpacity(0.6),
+                            blurRadius: 12)
+                      ]
+                    : null,
               ),
             ),
           ),
-          if (botonActivo == 'volumen_arriba')
+          if (botonActivo == 'volumen_arriba' ||
+              botonActivo == 'volumen_arriba_tap' ||
+              botonActivo == 'volumen_arriba_hold')
             Positioned(
-              right: 20,
-              top: 95,
-              child: _buildEtiqueta('🔊 Subir\nvolumen'),
-            ),
+                right: 20,
+                top: 95,
+                child: _buildEtiqueta('🔊 Subir\nvolumen')),
           // Botón BAJAR VOLUMEN
           Positioned(
             right: 0,
             top: 155,
-            child: _buildBoton(
-              activo: botonActivo == 'volumen_abajo',
-              onTap: botonActivo == 'volumen_abajo' ? _vibrarYAvanzar : null,
-              child: Container(
-                width: 14,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: botonActivo == 'volumen_abajo'
-                      ? const Color(0xFF6B4EFF)
-                      : const Color(0xFF3A3A5C),
-                  borderRadius: const BorderRadius.only(
-                    topRight: Radius.circular(8),
-                    bottomRight: Radius.circular(8),
-                  ),
-                  boxShadow: botonActivo == 'volumen_abajo'
-                      ? [BoxShadow(
-                          color: const Color(0xFF6B4EFF).withOpacity(0.6),
-                          blurRadius: 12,
-                        )]
-                      : null,
+            child: Container(
+              width: 14,
+              height: 50,
+              decoration: BoxDecoration(
+                color: (botonActivo == 'volumen_abajo' ||
+                        botonActivo == 'volumen_abajo_triple')
+                    ? const Color(0xFF6B4EFF)
+                    : const Color(0xFF3A3A5C),
+                borderRadius: const BorderRadius.only(
+                  topRight: Radius.circular(8),
+                  bottomRight: Radius.circular(8),
                 ),
+                boxShadow: (botonActivo == 'volumen_abajo' ||
+                        botonActivo == 'volumen_abajo_triple')
+                    ? [
+                        BoxShadow(
+                            color: const Color(0xFF6B4EFF).withOpacity(0.6),
+                            blurRadius: 12)
+                      ]
+                    : null,
               ),
             ),
           ),
-          if (botonActivo == 'volumen_abajo')
+          if (botonActivo == 'volumen_abajo' ||
+              botonActivo == 'volumen_abajo_triple')
             Positioned(
-              right: 20,
-              top: 160,
-              child: _buildEtiqueta('🔇 Bajar\nvolumen'),
-            ),
+                right: 20,
+                top: 160,
+                child: _buildEtiqueta('🔇 Bajar\nvolumen')),
           // Botón POWER
           Positioned(
             left: 0,
             top: 120,
-            child: _buildBoton(
-              activo: botonActivo == 'power' || botonActivo == 'power_explicacion',
-              onTap: botonActivo == 'power' ? _vibrarYAvanzar : null,
-              child: Container(
-                width: 14,
-                height: 65,
-                decoration: BoxDecoration(
-                  color: botonActivo == 'power' || botonActivo == 'power_explicacion'
-                      ? const Color(0xFFE53E3E)
-                      : const Color(0xFF3A3A5C),
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(8),
-                    bottomLeft: Radius.circular(8),
-                  ),
-                  boxShadow: botonActivo == 'power' || botonActivo == 'power_explicacion'
-                      ? [BoxShadow(
-                          color: const Color(0xFFE53E3E).withOpacity(0.6),
-                          blurRadius: 12,
-                        )]
-                      : null,
+            child: Container(
+              width: 14,
+              height: 65,
+              decoration: BoxDecoration(
+                color: botonActivo == 'power_explicacion'
+                    ? const Color(0xFFE53E3E)
+                    : const Color(0xFF3A3A5C),
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(8),
+                  bottomLeft: Radius.circular(8),
                 ),
+                boxShadow: botonActivo == 'power_explicacion'
+                    ? [
+                        BoxShadow(
+                            color: const Color(0xFFE53E3E).withOpacity(0.6),
+                            blurRadius: 12)
+                      ]
+                    : null,
               ),
             ),
           ),
-          if (botonActivo == 'power')
+          if (botonActivo == 'power_explicacion')
             Positioned(
-              left: 20,
-              top: 128,
-              child: _buildEtiqueta('🔴 Apagar /\nEncender'),
-            ),
+                left: 20,
+                top: 128,
+                child: _buildEtiqueta('🔴 Apagar /\nEncender')),
         ],
       ),
-    );
-  }
-
-  Widget _buildBoton({
-    required bool activo,
-    required VoidCallback? onTap,
-    required Widget child,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: activo
-          ? TweenAnimationBuilder<double>(
-              tween: Tween(begin: 1.0, end: 1.15),
-              duration: const Duration(milliseconds: 600),
-              builder: (_, scale, __) => Transform.scale(
-                scale: scale,
-                child: child,
-              ),
-            )
-          : child,
     );
   }
 
@@ -433,21 +421,16 @@ bool _onKey(KeyEvent event) {
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 6,
-          ),
+          BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 6),
         ],
       ),
-      child: Text(
-        texto,
-        style: const TextStyle(
-          color: Color(0xFF1A1A2E),
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          height: 1.4,
-        ),
-      ),
+      child: Text(texto,
+          style: const TextStyle(
+            color: Color(0xFF1A1A2E),
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            height: 1.4,
+          )),
     );
   }
 
@@ -468,22 +451,18 @@ bool _onKey(KeyEvent event) {
               children: [
                 Text('🎉', style: TextStyle(fontSize: 60)),
                 SizedBox(height: 16),
-                Text(
-                  '¡Muy bien!',
-                  style: TextStyle(
-                    color: Color(0xFF059669),
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                Text('¡Muy bien!',
+                    style: TextStyle(
+                      color: Color(0xFF059669),
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                    )),
                 SizedBox(height: 8),
-                Text(
-                  'Lo hiciste perfecto 👏',
-                  style: TextStyle(
-                    color: Color(0xFF555577),
-                    fontSize: 18,
-                  ),
-                ),
+                Text('Lo hiciste perfecto 👏',
+                    style: TextStyle(
+                      color: Color(0xFF555577),
+                      fontSize: 18,
+                    )),
               ],
             ),
           ),
