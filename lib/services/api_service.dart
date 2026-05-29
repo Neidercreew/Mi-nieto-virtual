@@ -8,7 +8,7 @@ class ApiService {
 
   // Celular físico Android → descomenta esta y comenta la de arriba
   // (corre "ipconfig" en tu terminal y busca tu IPv4)
-static const String _base = 'http://TU_IP_LOCAL:3000/api';
+static const String _base = 'http://localhost:3000/api';
 
   // Cuando tengas backend en la nube → descomenta esta
   // static const String _base = 'https://tu-dominio.com/api';

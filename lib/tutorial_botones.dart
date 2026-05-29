@@ -5,7 +5,8 @@ import 'package:vibration/vibration.dart';
 import 'services/api_service.dart'; //  para guardar progreso del tutorial
 
 class TutorialBotonesScreen extends StatefulWidget {
-  const TutorialBotonesScreen({super.key});
+  final int pasoInicial;
+  const TutorialBotonesScreen({super.key, this.pasoInicial = 0});
 
   @override
   State<TutorialBotonesScreen> createState() => _TutorialBotonesScreenState();
@@ -91,9 +92,18 @@ class _TutorialBotonesScreenState extends State<TutorialBotonesScreen> {
   @override
   void initState() {
     super.initState();
+    _pasoActual = widget.pasoInicial; //esto hace que arranque desde el paso guardado
     HardwareKeyboard.instance.removeHandler(_handler);
     HardwareKeyboard.instance.addHandler(_handler);
+    _guardarPasoActual(); // guarda el paso inicial al cargar el tutorial 
   }
+  Future<void> _guardarPasoActual() async {
+  final prefs = await SharedPreferences.getInstance();
+  final userId = prefs.getString('usuario_id');
+  if (userId != null) {
+    await ApiService.guardarPaso(userId, 'conociendo_tu_celular', _pasoActual);
+  }
+}
 
   @override
   void dispose() {

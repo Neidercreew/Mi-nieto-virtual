@@ -63,10 +63,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
           imagenAsset: 'assets/icons/celular.png',
           fondo: const Color(0xFFFFFFFF),
           nivel: 'basico',
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const TutorialBotonesScreen()),
-          ),
+          onTap: () => _abrirLeccion1(),
         ),
         TutorialApp(
           nombre: 'Cómo navegar',
@@ -718,7 +715,71 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
       ),
     );
   }
+  Future<void> _abrirLeccion1() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('usuario_id');
 
+    int pasoGuardado = 0;
+    bool yaCompletada = false;
+
+    if (userId != null) {
+      final progreso = await ApiService.obtenerProgreso(userId);
+      final lista = progreso?['progreso'] as List<dynamic>? ?? [];
+      final leccion = lista.firstWhere(
+        (p) => p['leccionId'] == 'conociendo_tu_celular',
+        orElse: () => null,
+      );
+      pasoGuardado = leccion?['paso'] ?? -1;
+      yaCompletada = leccion?['completada'] ?? false;
+    }
+
+    if (!mounted) return;
+
+    if (pasoGuardado >= 0 && !yaCompletada) {
+      showDialog(
+        context: context,
+        builder: (_) => AlertDialog(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+          title: const Text('👋 ¡Bienvenido de vuelta!',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          content: Text(
+              'Quedaste en el paso ${pasoGuardado + 1} de 7.\n¿Qué quieres hacer?',
+              style: const TextStyle(fontSize: 16)),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // cierra el dialog
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (_) => TutorialBotonesScreen(pasoInicial: 0),
+                ));
+              },
+              child: const Text('Empezar de nuevo',
+                  style: TextStyle(color: Color(0xFF9999BB), fontSize: 15)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF6B4EFF),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+              ),
+              onPressed: () {
+                Navigator.pop(context); // cierra el dialog
+                Navigator.push(context, MaterialPageRoute(
+                  builder: (_) => TutorialBotonesScreen(pasoInicial: pasoGuardado),
+                ));
+              },
+              child: const Text('Continuar 🚀',
+                  style: TextStyle(color: Colors.white, fontSize: 15)),
+            ),
+          ],
+        ),
+      );
+    } else {
+      Navigator.push(context, MaterialPageRoute(
+        builder: (_) => const TutorialBotonesScreen(),
+      ));
+    }
+  }
   void _abrirTutorial(TutorialApp app) {
     final pasosPrueba = [
       PasoTutorial(
