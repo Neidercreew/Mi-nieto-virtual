@@ -95,15 +95,7 @@ class _TutorialBotonesScreenState extends State<TutorialBotonesScreen> {
     _pasoActual = widget.pasoInicial; //esto hace que arranque desde el paso guardado
     HardwareKeyboard.instance.removeHandler(_handler);
     HardwareKeyboard.instance.addHandler(_handler);
-    _guardarPasoActual(); // guarda el paso inicial al cargar el tutorial 
   }
-  Future<void> _guardarPasoActual() async {
-  final prefs = await SharedPreferences.getInstance();
-  final userId = prefs.getString('usuario_id');
-  if (userId != null) {
-    await ApiService.guardarPaso(userId, 'conociendo_tu_celular', _pasoActual);
-  }
-}
 
   @override
   void dispose() {
@@ -125,9 +117,10 @@ class _TutorialBotonesScreenState extends State<TutorialBotonesScreen> {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getString('usuario_id');
     if (userId != null) {
-      await ApiService.guardarPaso(userId, 'conociendo_tu_celular', _pasoActual);
-      print('📍 Paso $_pasoActual guardado para usuario $userId');
-    }
+      final proximoPaso = _pasoActual + 1;
+      await ApiService.guardarPaso(userId, 'conociendo_tu_celular', proximoPaso);
+      print('📍 Paso $proximoPaso guardado para usuario $userId');
+    }  
 
     setState(() => _mostrarFelicitacion = true);
 
