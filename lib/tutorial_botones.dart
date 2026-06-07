@@ -198,13 +198,24 @@ class _TutorialBotonesScreenState extends State<TutorialBotonesScreen> {
                 Padding(
                   padding: const EdgeInsets.all(24),
                   child: GestureDetector(
-                    onTap: () {
+                    onTap: () async {
                       if (esUltimoPaso) {
-                        Navigator.pop(context);
-                      } else {
-                        setState(() => _pasoActual++);
-                      }
-                    },
+                         // Marca la lección como completada en el backend
+                        final prefs = await SharedPreferences.getInstance();
+                        final userId = prefs.getString('usuario_id');
+                        if (userId != null) {
+                          await ApiService.guardarPaso(
+                            userId,
+                            'conociendo_tu_celular',
+                            _pasos.length, // paso final = total de pasos = completada
+                            completada: true,
+                          );   
+                         }
+                        if (mounted) Navigator.pop(context); // regresa al mapa
+                    } else {
+                      setState(() => _pasoActual++);
+                    }
+                  },
                     child: Container(
                       width: double.infinity,
                       height: 60,

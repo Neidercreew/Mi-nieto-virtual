@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'menu_principal.dart';
-import 'services/api_service.dart'; // 👈 nuevo
+import 'services/api_service.dart'; // nuevo
 
 class RegistroNombreScreen extends StatefulWidget {
   const RegistroNombreScreen({super.key});
@@ -12,7 +12,7 @@ class RegistroNombreScreen extends StatefulWidget {
 
 class _RegistroNombreScreenState extends State<RegistroNombreScreen> {
   final TextEditingController _nombreController = TextEditingController();
-  bool _cargando = false; // 👈 para mostrar loading mientras llama al backend
+  bool _cargando = false; //  para mostrar loading mientras llama al backend
 
   Future<void> _guardarNombre() async {
     if (_nombreController.text.trim().isEmpty) return;
@@ -23,7 +23,7 @@ class _RegistroNombreScreenState extends State<RegistroNombreScreen> {
     final nombre = _nombreController.text.trim();
     await prefs.setString('nombre_usuario', nombre);
 
-    // 👇 Crea el usuario en el backend y guarda su ID
+    // Crea el usuario en el backend y guarda su ID
     final nivel = prefs.getString('nivel_usuario') ?? 'basico';
     final userId = await ApiService.crearUsuario(nombre, nivel);
     if (userId != null) {
@@ -70,7 +70,7 @@ class _RegistroNombreScreenState extends State<RegistroNombreScreen> {
                 ),
               ),
               const SizedBox(height: 30),
-              // 👇 Muestra loading o el botón según estado
+              // Muestra loading o el botón según estado
               _cargando
                   ? const CircularProgressIndicator(
                       color: Color(0xFF6200EE),

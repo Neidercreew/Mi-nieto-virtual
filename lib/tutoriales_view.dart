@@ -4,6 +4,8 @@ import 'detalle_tutorial.dart';
 import 'package:flutter/material.dart';
 import 'tutorial_botones.dart';
 import 'services/api_service.dart';
+import 'mapa_lecciones.dart';
+import 'proximamente_screen.dart';
 
 class TutorialApp {
   final String nombre;
@@ -58,63 +60,149 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
   }
 
   List<TutorialApp> get _apps => [
-        TutorialApp(
-          nombre: 'Conociendo tu celular',
-          imagenAsset: 'assets/icons/celular.png',
-          fondo: const Color(0xFFFFFFFF),
-          nivel: 'basico',
-          onTap: () => _abrirLeccion1(),
-        ),
-        TutorialApp(
-          nombre: 'Cómo navegar',
-          imagenAsset: 'assets/icons/navegar.png',
-          fondo: const Color(0xFFFFFFFF),
-          nivel: 'basico',
-        ),
-        TutorialApp(
-          nombre: 'Cámara de tu celular',
-          imagenAsset: 'assets/icons/camara.png',
-          fondo: const Color(0xFFFFFFFF),
-          nivel: 'basico',
-        ),
-        TutorialApp(
-          nombre: 'Teléfono de tu celular',
-          imagenAsset: 'assets/icons/telefono.png',
-          fondo: const Color(0xFFFFFFFF),
-          nivel: 'basico',
-        ),
-        TutorialApp(
-          nombre: 'Whatsapp',
-          imagenAsset: 'assets/icons/whatsapp.png',
-          fondo: const Color(0xFFFFFFFF),
-          nivel: 'intermedio',
-        ),
-        TutorialApp(
-          nombre: 'Gmail// correo',
-          imagenAsset: 'assets/icons/gmail.png',
-          fondo: const Color(0xFFFFFFFF),
-          nivel: 'intermedio',
-        ),
-        TutorialApp(
-          nombre: 'Mensajes de tu celular',
-          imagenAsset: 'assets/icons/mensajes.png',
-          fondo: const Color(0xFFFFFFFF),
-          nivel: 'intermedio',
-        ),
-        TutorialApp(
-          nombre: 'Calendario',
-          imagenAsset: 'assets/icons/calendario.png',
-          fondo: const Color(0xFFFFFFFF),
-          nivel: 'intermedio',
-        ),
-        TutorialApp(
-          nombre: 'Nequi',
-          imagenAsset: 'assets/icons/nequi.png',
-          fondo: const Color(0xFFFFFFFF),
-          nivel: 'avanzado',
-        ),
-      ];
+  // ── BÁSICO ──────────────────────────────────────────
+  TutorialApp(
+    nombre: 'Conociendo tu celular',
+    imagenAsset: 'assets/icons/celular.png',
+    fondo: const Color(0xFFFFFFFF),
+    nivel: 'basico',
+    onTap: () => Navigator.push(context, MaterialPageRoute(
+      builder: (_) => MapaLeccionesScreen(
+        moduloTitulo: 'Conociendo tu celular',
+        lecciones: [
+          LeccionMapa(
+            leccionId: 'conociendo_tu_celular',
+            titulo: 'Botones físicos',
+            emoji: '📱',
+            builder: () => const TutorialBotonesScreen(),
+            builderDesde: (paso) => TutorialBotonesScreen(pasoInicial: paso),
+          ),
+          LeccionMapa(
+            leccionId: 'pantalla_tactil',
+            titulo: 'La pantalla táctil',
+            emoji: '👆',
+            builder: () => const ProximamenteScreen(titulo: 'La pantalla táctil'),
+          ),
+          LeccionMapa(
+            leccionId: 'navegacion_basica',
+            titulo: 'Navegación básica',
+            emoji: '🧭',
+            builder: () => const ProximamenteScreen(titulo: 'Navegación básica'),
+          ),
+        ],
+      ),
+    )),
+  ),
+  TutorialApp(
+    nombre: 'Cómo navegar',
+    imagenAsset: 'assets/icons/navegar.png',
+    fondo: const Color(0xFFFFFFFF),
+    nivel: 'basico',
+    onTap: () => Navigator.push(context, MaterialPageRoute(
+      builder: (_) => MapaLeccionesScreen(
+        moduloTitulo: 'Cómo navegar',
+        lecciones: [
+          LeccionMapa(
+            leccionId: 'navegar_leccion1',
+            titulo: 'Abrir aplicaciones',
+            emoji: '🧭',
+            builder: () => const ProximamenteScreen(titulo: 'Abrir aplicaciones'),
+          ),
+          LeccionMapa(
+            leccionId: 'navegar_leccion2',
+            titulo: 'Internet básico',
+            emoji: '🌐',
+            builder: () => const ProximamenteScreen(titulo: 'Internet básico'),
+          ),
+        ],
+      ),
+    )),
+  ),
+  TutorialApp(
+    nombre: 'Cámara de tu celular',
+    imagenAsset: 'assets/icons/camara.png',
+    fondo: const Color(0xFFFFFFFF),
+    nivel: 'basico',
+    onTap: () => Navigator.push(context, MaterialPageRoute(
+      builder: (_) => MapaLeccionesScreen(
+        moduloTitulo: 'Cámara de tu celular',
+        lecciones: [
+          LeccionMapa(
+            leccionId: 'camara_leccion1',
+            titulo: 'Tomar una foto',
+            emoji: '📷',
+            builder: () => const ProximamenteScreen(titulo: 'Tomar una foto'),
+          ),
+          LeccionMapa(
+            leccionId: 'camara_leccion2',
+            titulo: 'Ver tus fotos',
+            emoji: '🖼️',
+            builder: () => const ProximamenteScreen(titulo: 'Ver tus fotos'),
+          ),
+        ],
+      ),
+    )),
+  ),
+  TutorialApp(
+    nombre: 'Teléfono de tu celular',
+    imagenAsset: 'assets/icons/telefono.png',
+    fondo: const Color(0xFFFFFFFF),
+    nivel: 'basico',
+    onTap: () => Navigator.push(context, MaterialPageRoute(
+      builder: (_) => MapaLeccionesScreen(
+        moduloTitulo: 'Teléfono de tu celular',
+        lecciones: [
+          LeccionMapa(
+            leccionId: 'telefono_leccion1',
+            titulo: 'Hacer una llamada',
+            emoji: '📞',
+            builder: () => const ProximamenteScreen(titulo: 'Hacer una llamada'),
+          ),
+          LeccionMapa(
+            leccionId: 'telefono_leccion2',
+            titulo: 'Guardar contactos',
+            emoji: '👤',
+            builder: () => const ProximamenteScreen(titulo: 'Guardar contactos'),
+          ),
+        ],
+      ),
+    )),
+  ),
 
+  // ── INTERMEDIO ──────────────────────────────────────
+  TutorialApp(
+    nombre: 'Whatsapp',
+    imagenAsset: 'assets/icons/whatsapp.png',
+    fondo: const Color(0xFFFFFFFF),
+    nivel: 'intermedio',
+  ),
+  TutorialApp(
+    nombre: 'Gmail// correo',
+    imagenAsset: 'assets/icons/gmail.png',
+    fondo: const Color(0xFFFFFFFF),
+    nivel: 'intermedio',
+  ),
+  TutorialApp(
+    nombre: 'Mensajes de tu celular',
+    imagenAsset: 'assets/icons/mensajes.png',
+    fondo: const Color(0xFFFFFFFF),
+    nivel: 'intermedio',
+  ),
+  TutorialApp(
+    nombre: 'Calendario',
+    imagenAsset: 'assets/icons/calendario.png',
+    fondo: const Color(0xFFFFFFFF),
+    nivel: 'intermedio',
+  ),
+
+  // ── AVANZADO ────────────────────────────────────────
+  TutorialApp(
+    nombre: 'Nequi',
+    imagenAsset: 'assets/icons/nequi.png',
+    fondo: const Color(0xFFFFFFFF),
+    nivel: 'avanzado',
+  ),
+];
   List<TutorialApp> get _appsFiltradas {
     return _apps.where((a) => a.nivel == _nivelUsuario).toList();
   }
