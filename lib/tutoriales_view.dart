@@ -6,6 +6,7 @@ import 'tutorial_botones.dart';
 import 'services/api_service.dart';
 import 'mapa_lecciones.dart';
 import 'proximamente_screen.dart';
+import 'tutorial_pantalla_tactil.dart';
 
 class TutorialApp {
   final String nombre;
@@ -81,7 +82,8 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
             leccionId: 'pantalla_tactil',
             titulo: 'La pantalla táctil',
             emoji: '👆',
-            builder: () => const ProximamenteScreen(titulo: 'La pantalla táctil'),
+            builder: () => const TutorialPantallaTactilScreen(),
+            builderDesde: (paso) => TutorialPantallaTactilScreen(pasoInicial: paso),
           ),
           LeccionMapa(
             leccionId: 'navegacion_basica',
@@ -458,10 +460,19 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
         final pasoActual = leccion?['paso'] ?? -1;
         final completada = leccion?['completada'] ?? false;
         final totalPasos = 7;
+        // Lección 2 — lee el progreso real del backend igual que la lección 1
+        final leccion2 = progresoList.firstWhere(
+          (p) => p['leccionId'] == 'pantalla_tactil',
+          orElse: () => null,
+        );
+        final pasoActual2 = leccion2?['paso'] ?? -1;
+        final completada2 = leccion2?['completada'] ?? false;
+        final totalPasos2 = 14; // la lección 2 tiene 14 pasos
         final porcentaje =
             pasoActual < 0 ? 0.0 : (pasoActual + 1) / totalPasos;
 
-        final leccionesCompletadas = completada ? 1 : 0;
+        // Cuenta cuántas lecciones están completadas sumando todas
+        final leccionesCompletadas = (completada ? 1 : 0) + (completada2 ? 1 : 0);
         final totalLecciones = 5;
         final porcentajeGeneral = leccionesCompletadas / totalLecciones;
 
@@ -579,11 +590,11 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
                 numero: 2,
                 titulo: 'La pantalla táctil',
                 emoji: '👆',
-                pasoActual: -1,
-                totalPasos: 7,
-                completada: false,
-                disponible: false,
-              ),
+                pasoActual: pasoActual2,
+                totalPasos: totalPasos2,
+                completada: completada2,
+                disponible: completada, // se desbloquea cuando lección 1 está completa
+),
               _buildTarjetaLeccion(
                 numero: 3,
                 titulo: 'Navegación básica',
