@@ -5,7 +5,7 @@ class ApiService {
   //static const String _base = 'http://10.0.2.2:3000/api';
 
   // Celular físico Android → ip local de el cel
-static const String _base = 'http://localhost:3000/api';
+static const String _base = 'https://mnv-backend-production.up.railway.app/api';
 
   // ── CREAR USUARIO ──────────────────────────────────────────
   static Future<String?> crearUsuario(String nombre, String nivel) async {
