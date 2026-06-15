@@ -1,12 +1,13 @@
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'services/api_service.dart';
 import 'seleccion_nivel.dart';
 import 'detalle_tutorial.dart';
-import 'package:flutter/material.dart';
 import 'tutorial_botones.dart';
-import 'services/api_service.dart';
 import 'mapa_lecciones.dart';
 import 'proximamente_screen.dart';
 import 'tutorial_pantalla_tactil.dart';
+import 'tutorial_moviendote.dart';
 
 class TutorialApp {
   final String nombre;
@@ -35,19 +36,21 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
   String _nivelUsuario = 'basico';
   int _navIndex = 0;
   int _tabSeleccionado = 0;
-  late Future<Map<String, dynamic>?> _progresoFuture; // 👈 nuevo
+
+  // Future que carga el progreso del usuario desde el backend
+  late Future<Map<String, dynamic>?> _progresoFuture;
 
   @override
   void initState() {
     super.initState();
     _verificarNivel();
-    _progresoFuture = _cargarProgreso(); // 👈 nuevo
+    _progresoFuture = _cargarProgreso();
   }
 
+  // Verifica que el usuario haya seleccionado nivel, si no lo redirige
   Future<void> _verificarNivel() async {
     final prefs = await SharedPreferences.getInstance();
     final nivel = prefs.getString('nivel_usuario');
-
     if (nivel == null && mounted) {
       Navigator.pushReplacement(
         context,
@@ -60,151 +63,159 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
     }
   }
 
+  // Lista completa de modulos y lecciones organizados por nivel
   List<TutorialApp> get _apps => [
-  // ── BÁSICO ──────────────────────────────────────────
-  TutorialApp(
-    nombre: 'Conociendo tu celular',
-    imagenAsset: 'assets/icons/celular.png',
-    fondo: const Color(0xFFFFFFFF),
-    nivel: 'basico',
-    onTap: () => Navigator.push(context, MaterialPageRoute(
-      builder: (_) => MapaLeccionesScreen(
-        moduloTitulo: 'Conociendo tu celular',
-        lecciones: [
-          LeccionMapa(
-            leccionId: 'conociendo_tu_celular',
-            titulo: 'Botones físicos',
-            emoji: '📱',
-            builder: () => const TutorialBotonesScreen(),
-            builderDesde: (paso) => TutorialBotonesScreen(pasoInicial: paso),
-          ),
-          LeccionMapa(
-            leccionId: 'pantalla_tactil',
-            titulo: 'La pantalla táctil',
-            emoji: '👆',
-            builder: () => const TutorialPantallaTactilScreen(),
-            builderDesde: (paso) => TutorialPantallaTactilScreen(pasoInicial: paso),
-          ),
-          LeccionMapa(
-            leccionId: 'navegacion_basica',
-            titulo: 'Navegación básica',
-            emoji: '🧭',
-            builder: () => const ProximamenteScreen(titulo: 'Navegación básica'),
-          ),
-        ],
-      ),
-    )),
-  ),
-  TutorialApp(
-    nombre: 'Cómo navegar',
-    imagenAsset: 'assets/icons/navegar.png',
-    fondo: const Color(0xFFFFFFFF),
-    nivel: 'basico',
-    onTap: () => Navigator.push(context, MaterialPageRoute(
-      builder: (_) => MapaLeccionesScreen(
-        moduloTitulo: 'Cómo navegar',
-        lecciones: [
-          LeccionMapa(
-            leccionId: 'navegar_leccion1',
-            titulo: 'Abrir aplicaciones',
-            emoji: '🧭',
-            builder: () => const ProximamenteScreen(titulo: 'Abrir aplicaciones'),
-          ),
-          LeccionMapa(
-            leccionId: 'navegar_leccion2',
-            titulo: 'Internet básico',
-            emoji: '🌐',
-            builder: () => const ProximamenteScreen(titulo: 'Internet básico'),
-          ),
-        ],
-      ),
-    )),
-  ),
-  TutorialApp(
-    nombre: 'Cámara de tu celular',
-    imagenAsset: 'assets/icons/camara.png',
-    fondo: const Color(0xFFFFFFFF),
-    nivel: 'basico',
-    onTap: () => Navigator.push(context, MaterialPageRoute(
-      builder: (_) => MapaLeccionesScreen(
-        moduloTitulo: 'Cámara de tu celular',
-        lecciones: [
-          LeccionMapa(
-            leccionId: 'camara_leccion1',
-            titulo: 'Tomar una foto',
-            emoji: '📷',
-            builder: () => const ProximamenteScreen(titulo: 'Tomar una foto'),
-          ),
-          LeccionMapa(
-            leccionId: 'camara_leccion2',
-            titulo: 'Ver tus fotos',
-            emoji: '🖼️',
-            builder: () => const ProximamenteScreen(titulo: 'Ver tus fotos'),
-          ),
-        ],
-      ),
-    )),
-  ),
-  TutorialApp(
-    nombre: 'Teléfono de tu celular',
-    imagenAsset: 'assets/icons/telefono.png',
-    fondo: const Color(0xFFFFFFFF),
-    nivel: 'basico',
-    onTap: () => Navigator.push(context, MaterialPageRoute(
-      builder: (_) => MapaLeccionesScreen(
-        moduloTitulo: 'Teléfono de tu celular',
-        lecciones: [
-          LeccionMapa(
-            leccionId: 'telefono_leccion1',
-            titulo: 'Hacer una llamada',
-            emoji: '📞',
-            builder: () => const ProximamenteScreen(titulo: 'Hacer una llamada'),
-          ),
-          LeccionMapa(
-            leccionId: 'telefono_leccion2',
-            titulo: 'Guardar contactos',
-            emoji: '👤',
-            builder: () => const ProximamenteScreen(titulo: 'Guardar contactos'),
-          ),
-        ],
-      ),
-    )),
-  ),
 
-  // ── INTERMEDIO ──────────────────────────────────────
-  TutorialApp(
-    nombre: 'Whatsapp',
-    imagenAsset: 'assets/icons/whatsapp.png',
-    fondo: const Color(0xFFFFFFFF),
-    nivel: 'intermedio',
-  ),
-  TutorialApp(
-    nombre: 'Gmail// correo',
-    imagenAsset: 'assets/icons/gmail.png',
-    fondo: const Color(0xFFFFFFFF),
-    nivel: 'intermedio',
-  ),
-  TutorialApp(
-    nombre: 'Mensajes de tu celular',
-    imagenAsset: 'assets/icons/mensajes.png',
-    fondo: const Color(0xFFFFFFFF),
-    nivel: 'intermedio',
-  ),
-  TutorialApp(
-    nombre: 'Calendario',
-    imagenAsset: 'assets/icons/calendario.png',
-    fondo: const Color(0xFFFFFFFF),
-    nivel: 'intermedio',
-  ),
+    // NIVEL BASICO
+    TutorialApp(
+      nombre: 'Conociendo tu celular',
+      imagenAsset: 'assets/icons/celular.png',
+      fondo: const Color(0xFFFFFFFF),
+      nivel: 'basico',
+      onTap: () => Navigator.push(context, MaterialPageRoute(
+        builder: (_) => MapaLeccionesScreen(
+          moduloTitulo: 'Conociendo tu celular',
+          lecciones: [
+            LeccionMapa(
+              leccionId: 'conociendo_tu_celular',
+              titulo: 'Botones físicos',
+              emoji: '📱',
+              builder: () => const TutorialBotonesScreen(),
+              builderDesde: (paso) => TutorialBotonesScreen(pasoInicial: paso),
+            ),
+            LeccionMapa(
+              leccionId: 'pantalla_tactil',
+              titulo: 'La pantalla táctil',
+              emoji: '👆',
+              builder: () => const TutorialPantallaTactilScreen(),
+              builderDesde: (paso) => TutorialPantallaTactilScreen(pasoInicial: paso),
+            ),
+            LeccionMapa(
+              leccionId: 'moviendote_celular',
+              titulo: 'Moviendote en tu celular',
+              emoji: '🧭',
+              builder: () => const TutorialMoviendoteScreen(),
+              builderDesde: (paso) => TutorialMoviendoteScreen(pasoInicial: paso),
+            ),
+          ],
+        ),
+      )),
+    ),
 
-  // ── AVANZADO ────────────────────────────────────────
-  TutorialApp(
-    nombre: 'Nequi',
-    imagenAsset: 'assets/icons/nequi.png',
-    fondo: const Color(0xFFFFFFFF),
-    nivel: 'avanzado',
-  ),
-];
+    TutorialApp(
+      nombre: 'Cómo navegar',
+      imagenAsset: 'assets/icons/navegar.png',
+      fondo: const Color(0xFFFFFFFF),
+      nivel: 'basico',
+      onTap: () => Navigator.push(context, MaterialPageRoute(
+        builder: (_) => MapaLeccionesScreen(
+          moduloTitulo: 'Cómo navegar',
+          lecciones: [
+            LeccionMapa(
+              leccionId: 'navegar_leccion1',
+              titulo: 'Abrir aplicaciones',
+              emoji: '🧭',
+              builder: () => const ProximamenteScreen(titulo: 'Abrir aplicaciones'),
+            ),
+            LeccionMapa(
+              leccionId: 'navegar_leccion2',
+              titulo: 'Internet básico',
+              emoji: '🌐',
+              builder: () => const ProximamenteScreen(titulo: 'Internet básico'),
+            ),
+          ],
+        ),
+      )),
+    ),
+
+    TutorialApp(
+      nombre: 'Cámara de tu celular',
+      imagenAsset: 'assets/icons/camara.png',
+      fondo: const Color(0xFFFFFFFF),
+      nivel: 'basico',
+      onTap: () => Navigator.push(context, MaterialPageRoute(
+        builder: (_) => MapaLeccionesScreen(
+          moduloTitulo: 'Cámara de tu celular',
+          lecciones: [
+            LeccionMapa(
+              leccionId: 'camara_leccion1',
+              titulo: 'Tomar una foto',
+              emoji: '📷',
+              builder: () => const ProximamenteScreen(titulo: 'Tomar una foto'),
+            ),
+            LeccionMapa(
+              leccionId: 'camara_leccion2',
+              titulo: 'Ver tus fotos',
+              emoji: '🖼️',
+              builder: () => const ProximamenteScreen(titulo: 'Ver tus fotos'),
+            ),
+          ],
+        ),
+      )),
+    ),
+
+    TutorialApp(
+      nombre: 'Teléfono de tu celular',
+      imagenAsset: 'assets/icons/telefono.png',
+      fondo: const Color(0xFFFFFFFF),
+      nivel: 'basico',
+      onTap: () => Navigator.push(context, MaterialPageRoute(
+        builder: (_) => MapaLeccionesScreen(
+          moduloTitulo: 'Teléfono de tu celular',
+          lecciones: [
+            LeccionMapa(
+              leccionId: 'telefono_leccion1',
+              titulo: 'Hacer una llamada',
+              emoji: '📞',
+              builder: () => const ProximamenteScreen(titulo: 'Hacer una llamada'),
+            ),
+            LeccionMapa(
+              leccionId: 'telefono_leccion2',
+              titulo: 'Guardar contactos',
+              emoji: '👤',
+              builder: () => const ProximamenteScreen(titulo: 'Guardar contactos'),
+            ),
+          ],
+        ),
+      )),
+    ),
+
+    // NIVEL INTERMEDIO
+    TutorialApp(
+      nombre: 'Whatsapp',
+      imagenAsset: 'assets/icons/whatsapp.png',
+      fondo: const Color(0xFFFFFFFF),
+      nivel: 'intermedio',
+    ),
+    TutorialApp(
+      nombre: 'Gmail// correo',
+      imagenAsset: 'assets/icons/gmail.png',
+      fondo: const Color(0xFFFFFFFF),
+      nivel: 'intermedio',
+    ),
+    TutorialApp(
+      nombre: 'Mensajes de tu celular',
+      imagenAsset: 'assets/icons/mensajes.png',
+      fondo: const Color(0xFFFFFFFF),
+      nivel: 'intermedio',
+    ),
+    TutorialApp(
+      nombre: 'Calendario',
+      imagenAsset: 'assets/icons/calendario.png',
+      fondo: const Color(0xFFFFFFFF),
+      nivel: 'intermedio',
+    ),
+
+    // NIVEL AVANZADO
+    TutorialApp(
+      nombre: 'Nequi',
+      imagenAsset: 'assets/icons/nequi.png',
+      fondo: const Color(0xFFFFFFFF),
+      nivel: 'avanzado',
+    ),
+  ];
+
+  // Filtra los modulos segun el nivel del usuario
   List<TutorialApp> get _appsFiltradas {
     return _apps.where((a) => a.nivel == _nivelUsuario).toList();
   }
@@ -240,6 +251,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
           ),
         ),
         actions: [
+          // Boton para cambiar el nivel del usuario
           IconButton(
             icon: const Icon(Icons.tune_rounded,
                 color: Color(0xFF6B4EFF), size: 24),
@@ -256,6 +268,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
               }
             },
           ),
+          // Boton de notificaciones con punto rojo
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: Stack(
@@ -309,6 +322,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
     );
   }
 
+  // Tabs de Aplicaciones y Mi Progreso
   Widget _buildTabs() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 24),
@@ -332,8 +346,8 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
       child: GestureDetector(
         onTap: () => setState(() {
           _tabSeleccionado = index;
+          // Recarga el progreso cada vez que se abre la tab
           if (index == 1) {
-            // 👇 Recarga el progreso cada vez que tocas "Mi Progreso"
             _progresoFuture = _cargarProgreso();
           }
         }),
@@ -358,6 +372,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
     );
   }
 
+  // Grid de modulos disponibles segun el nivel del usuario
   Widget _buildGridAplicaciones() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -378,6 +393,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
     );
   }
 
+  // Tarjeta individual de cada modulo en el grid
   Widget _buildTarjetaApp(TutorialApp app, Color bgColor) {
     return GestureDetector(
       onTap: app.onTap ?? () => _abrirTutorial(app),
@@ -440,9 +456,10 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
     );
   }
 
+  // Dashboard de progreso del usuario con todas sus lecciones
   Widget _buildMiProgreso() {
     return FutureBuilder<Map<String, dynamic>?>(
-      future: _progresoFuture, // 👈 usa la variable, no llama directo
+      future: _progresoFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
@@ -453,27 +470,37 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
         final data = snapshot.data;
         final progresoList = data?['progreso'] as List<dynamic>? ?? [];
 
+        // Lee el progreso de la leccion 1 desde el backend
         final leccion = progresoList.firstWhere(
           (p) => p['leccionId'] == 'conociendo_tu_celular',
           orElse: () => null,
         );
         final pasoActual = leccion?['paso'] ?? -1;
         final completada = leccion?['completada'] ?? false;
-        final totalPasos = 7;
-        // Lección 2 — lee el progreso real del backend igual que la lección 1
+        const totalPasos = 7;
+
+        // Lee el progreso de la leccion 2 desde el backend
         final leccion2 = progresoList.firstWhere(
           (p) => p['leccionId'] == 'pantalla_tactil',
           orElse: () => null,
         );
         final pasoActual2 = leccion2?['paso'] ?? -1;
         final completada2 = leccion2?['completada'] ?? false;
-        final totalPasos2 = 14; // la lección 2 tiene 14 pasos
-        final porcentaje =
-            pasoActual < 0 ? 0.0 : (pasoActual + 1) / totalPasos;
+        const totalPasos2 = 14;
 
-        // Cuenta cuántas lecciones están completadas sumando todas
-        final leccionesCompletadas = (completada ? 1 : 0) + (completada2 ? 1 : 0);
-        final totalLecciones = 5;
+        // Lee el progreso de la leccion 3 desde el backend
+        final leccion3 = progresoList.firstWhere(
+          (p) => p['leccionId'] == 'moviendote_celular',
+          orElse: () => null,
+        );
+        final pasoActual3 = leccion3?['paso'] ?? -1;
+        final completada3 = leccion3?['completada'] ?? false;
+        const totalPasos3 = 10;
+
+        // Suma las lecciones completadas para el porcentaje general
+        final leccionesCompletadas =
+            (completada ? 1 : 0) + (completada2 ? 1 : 0) + (completada3 ? 1 : 0);
+        const totalLecciones = 5;
         final porcentajeGeneral = leccionesCompletadas / totalLecciones;
 
         return SingleChildScrollView(
@@ -481,6 +508,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Tarjeta principal con circulo de progreso general
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
@@ -494,6 +522,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
                 ),
                 child: Row(
                   children: [
+                    // Circulo de progreso general
                     SizedBox(
                       width: 90,
                       height: 90,
@@ -506,11 +535,9 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
                             child: CircularProgressIndicator(
                               value: porcentajeGeneral,
                               strokeWidth: 8,
-                              backgroundColor:
-                                  Colors.white.withOpacity(0.2),
-                              valueColor:
-                                  const AlwaysStoppedAnimation<Color>(
-                                      Colors.white),
+                              backgroundColor: Colors.white.withOpacity(0.2),
+                              valueColor: const AlwaysStoppedAnimation<Color>(
+                                  Colors.white),
                             ),
                           ),
                           Text(
@@ -550,11 +577,9 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
                             borderRadius: BorderRadius.circular(10),
                             child: LinearProgressIndicator(
                               value: porcentajeGeneral,
-                              backgroundColor:
-                                  Colors.white.withOpacity(0.2),
-                              valueColor:
-                                  const AlwaysStoppedAnimation<Color>(
-                                      Colors.white),
+                              backgroundColor: Colors.white.withOpacity(0.2),
+                              valueColor: const AlwaysStoppedAnimation<Color>(
+                                  Colors.white),
                               minHeight: 6,
                             ),
                           ),
@@ -577,6 +602,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
               ),
               const SizedBox(height: 12),
 
+              // Tarjeta de progreso de cada leccion
               _buildTarjetaLeccion(
                 numero: 1,
                 titulo: 'Botones físicos',
@@ -593,16 +619,16 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
                 pasoActual: pasoActual2,
                 totalPasos: totalPasos2,
                 completada: completada2,
-                disponible: completada, // se desbloquea cuando lección 1 está completa
-),
+                disponible: completada,
+              ),
               _buildTarjetaLeccion(
                 numero: 3,
-                titulo: 'Navegación básica',
+                titulo: 'Moviendote en tu celular',
                 emoji: '🧭',
-                pasoActual: -1,
-                totalPasos: 7,
-                completada: false,
-                disponible: false,
+                pasoActual: pasoActual3,
+                totalPasos: totalPasos3,
+                completada: completada3,
+                disponible: completada2,
               ),
               _buildTarjetaLeccion(
                 numero: 4,
@@ -629,6 +655,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
     );
   }
 
+  // Tarjeta individual de progreso de cada leccion en el dashboard
   Widget _buildTarjetaLeccion({
     required int numero,
     required String titulo,
@@ -659,6 +686,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
       ),
       child: Row(
         children: [
+          // Circulo de progreso individual
           SizedBox(
             width: 56,
             height: 56,
@@ -682,11 +710,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
                   ),
                 ),
                 Text(
-                  completada
-                      ? '✅'
-                      : disponible
-                          ? emoji
-                          : '🔒',
+                  completada ? '✅' : disponible ? emoji : '🔒',
                   style: const TextStyle(fontSize: 20),
                 ),
               ],
@@ -731,6 +755,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
     );
   }
 
+  // Carga el progreso del usuario desde el backend
   Future<Map<String, dynamic>?> _cargarProgreso() async {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getString('usuario_id');
@@ -738,6 +763,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
     return ApiService.obtenerProgreso(userId);
   }
 
+  // Barra de navegacion inferior
   Widget _buildBottomNav() {
     return Container(
       height: 80,
@@ -758,6 +784,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
         children: [
           _navIcon(Icons.home_rounded, 0),
           _navIcon(Icons.calendar_today_rounded, 1),
+          // Boton central destacado
           GestureDetector(
             onTap: () {},
             child: Container(
@@ -814,107 +841,8 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
       ),
     );
   }
-  Future<void> _abrirLeccion1() async {
-    final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getString('usuario_id');
 
-    int pasoGuardado = 0;
-    bool yaCompletada = false;
-
-    if (userId != null) {
-      final progreso = await ApiService.obtenerProgreso(userId);
-      final lista = progreso?['progreso'] as List<dynamic>? ?? [];
-      final leccion = lista.firstWhere(
-        (p) => p['leccionId'] == 'conociendo_tu_celular',
-        orElse: () => null,
-      );
-      pasoGuardado = leccion?['paso'] ?? -1;
-      yaCompletada = leccion?['completada'] ?? false;
-    }
-
-if (!mounted) return;
-
-if (yaCompletada) {
-  // Ya completó → solo opción de empezar de nuevo
-  showDialog(
-    context: context,
-    builder: (_) => AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      title: const Text('🎉 ¡Ya completaste esta lección!',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-      content: const Text('¿Quieres practicar de nuevo?',
-          style: TextStyle(fontSize: 16)),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancelar',
-              style: TextStyle(color: Color(0xFF9999BB), fontSize: 15)),
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF6B4EFF),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12)),
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-            Navigator.push(context, MaterialPageRoute(
-              builder: (_) => const TutorialBotonesScreen(),
-            ));
-          },
-          child: const Text('Empezar de nuevo 🚀',
-              style: TextStyle(color: Colors.white, fontSize: 15)),
-        ),
-      ],
-    ),
-  );
-} else if (pasoGuardado > 0) {
-  // A medias → continuar o empezar de nuevo
-  showDialog(
-    context: context,
-    builder: (_) => AlertDialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-      title: const Text('👋 ¡Bienvenido de vuelta!',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-      content: Text(
-          'Quedaste en el paso ${pasoGuardado + 1} de 7.\n¿Qué quieres hacer?',
-          style: const TextStyle(fontSize: 16)),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-            Navigator.push(context, MaterialPageRoute(
-              builder: (_) => const TutorialBotonesScreen(),
-            ));
-          },
-          child: const Text('Empezar de nuevo',
-              style: TextStyle(color: Color(0xFF9999BB), fontSize: 15)),
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF6B4EFF),
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12)),
-          ),
-          onPressed: () {
-            Navigator.pop(context);
-            Navigator.push(context, MaterialPageRoute(
-              builder: (_) => TutorialBotonesScreen(pasoInicial: pasoGuardado),
-            ));
-          },
-          child: const Text('Continuar 🚀',
-              style: TextStyle(color: Colors.white, fontSize: 15)),
-        ),
-      ],
-    ),
-  );
-} else {
-  // Sin progreso → entra directo
-  Navigator.push(context, MaterialPageRoute(
-    builder: (_) => const TutorialBotonesScreen(),
-  ));
-}
-  }
+  // Abre un tutorial generico para modulos sin pantalla propia aun
   void _abrirTutorial(TutorialApp app) {
     final pasosPrueba = [
       PasoTutorial(
