@@ -8,6 +8,7 @@ import 'mapa_lecciones.dart';
 import 'proximamente_screen.dart';
 import 'tutorial_pantalla_tactil.dart';
 import 'tutorial_moviendote.dart';
+import 'tutorial_configuraciones.dart';
 
 class TutorialApp {
   final String nombre;
@@ -96,6 +97,13 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
               emoji: '🧭',
               builder: () => const TutorialMoviendoteScreen(),
               builderDesde: (paso) => TutorialMoviendoteScreen(pasoInicial: paso),
+            ),
+            LeccionMapa(
+              leccionId: 'configuraciones_esenciales',
+              titulo: 'Configuraciones esenciales',
+              emoji: '⚙️',
+              builder: () => const TutorialConfiguracionesScreen(),
+              builderDesde: (paso) => TutorialConfiguracionesScreen(pasoInicial: paso),
             ),
           ],
         ),
@@ -497,9 +505,18 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
         final completada3 = leccion3?['completada'] ?? false;
         const totalPasos3 = 10;
 
+        final leccion4 = progresoList.firstWhere(
+          (p) => p['leccionId'] == 'configuraciones_esenciales',
+          orElse: () => null,
+        );
+        final pasoActual4 = leccion4?['paso'] ?? -1;
+        final completada4 = leccion4?['completada'] ?? false;
+        const totalPasos4 = 36;
+
         // Suma las lecciones completadas para el porcentaje general
         final leccionesCompletadas =
-            (completada ? 1 : 0) + (completada2 ? 1 : 0) + (completada3 ? 1 : 0);
+            (completada ? 1 : 0) + (completada2 ? 1 : 0) +
+            (completada3 ? 1 : 0) + (completada4 ? 1 : 0);
         const totalLecciones = 5;
         final porcentajeGeneral = leccionesCompletadas / totalLecciones;
 
@@ -634,10 +651,10 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
                 numero: 4,
                 titulo: 'Configuraciones esenciales',
                 emoji: '⚙️',
-                pasoActual: -1,
-                totalPasos: 7,
-                completada: false,
-                disponible: false,
+                pasoActual: pasoActual4,
+                totalPasos: totalPasos4,
+                completada: completada4,
+                disponible: completada3,
               ),
               _buildTarjetaLeccion(
                 numero: 5,

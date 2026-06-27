@@ -13,7 +13,8 @@ dependencies:
   vibration: ^2.0.0
   cupertino_icons: ^1.0.8
   http: ^1.2.0
-
+  screen_brightness: ^0.2.2
+  torch_light: ^1.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
