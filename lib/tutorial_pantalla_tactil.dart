@@ -38,8 +38,8 @@ class _TutorialPantallaTactilScreenState
 
   // ── Estado específico por paso ──────────────────────────
   int _opcionSeleccionada = -1;   // paso 2: qué botón tocó
-  bool _arrastrandoArriba = false; // paso 4: flecha arriba activa
-  bool _arrastrandoAbajo = false;  // paso 5: flecha abajo activa
+// paso 4: flecha arriba activa
+// paso 5: flecha abajo activa
   bool _cuadroPresionado = false; // paso 3: cuadro de toque largo
   // ── Animación del dedo demostrativo (pasos 4 y 5) ──────
   late AnimationController _fingerController;
@@ -183,8 +183,6 @@ double _panelAltura = 0;
         _mostrarFelicitacion = false;
         _pasoCompletado = false;
         _opcionSeleccionada = -1;
-        _arrastrandoArriba = false;
-        _arrastrandoAbajo = false;
         // Avanza al siguiente paso
         if (_pasoActual < _pasos.length - 1) _pasoActual++;
       });

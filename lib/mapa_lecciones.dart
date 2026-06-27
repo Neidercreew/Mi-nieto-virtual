@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_service.dart';
-import 'tutorial_botones.dart';
-import 'proximamente_screen.dart';
 
 // Modelo de una lección dentro del mapa
 class LeccionMapa {
