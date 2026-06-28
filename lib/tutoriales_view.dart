@@ -9,6 +9,7 @@ import 'proximamente_screen.dart';
 import 'tutorial_pantalla_tactil.dart';
 import 'tutorial_moviendote.dart';
 import 'tutorial_configuraciones.dart';
+import 'tutorial_bateria.dart';
 
 class TutorialApp {
   final String nombre;
@@ -104,6 +105,13 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
               emoji: '⚙️',
               builder: () => const TutorialConfiguracionesScreen(),
               builderDesde: (paso) => TutorialConfiguracionesScreen(pasoInicial: paso),
+            ),
+            LeccionMapa(
+              leccionId: 'bateria_y_cuidado',
+              titulo: 'Batería y cuidado',
+              emoji: '🔋',
+              builder: () => const TutorialBateriaScreen(),
+              builderDesde: (paso) => TutorialBateriaScreen(pasoInicial: paso),
             ),
           ],
         ),
@@ -513,10 +521,18 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
         final completada4 = leccion4?['completada'] ?? false;
         const totalPasos4 = 36;
 
+        final leccion5 = progresoList.firstWhere(
+          (p) => p['leccionId'] == 'bateria_y_cuidado',
+          orElse: () => null,
+        );
+        final pasoActual5 = leccion5?['paso'] ?? -1;
+        final completada5 = leccion5?['completada'] ?? false;
+        const totalPasos5 = 14;
+
         // Suma las lecciones completadas para el porcentaje general
         final leccionesCompletadas =
             (completada ? 1 : 0) + (completada2 ? 1 : 0) +
-            (completada3 ? 1 : 0) + (completada4 ? 1 : 0);
+            (completada3 ? 1 : 0) + (completada4 ? 1 : 0) + (completada5 ? 1 : 0);
         const totalLecciones = 5;
         final porcentajeGeneral = leccionesCompletadas / totalLecciones;
 
@@ -660,10 +676,10 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
                 numero: 5,
                 titulo: 'Batería y cuidado',
                 emoji: '🔋',
-                pasoActual: -1,
-                totalPasos: 7,
-                completada: false,
-                disponible: false,
+                pasoActual: pasoActual5,
+                totalPasos: totalPasos5,
+                completada: completada5,
+                disponible: completada4,
               ),
             ],
           ),
