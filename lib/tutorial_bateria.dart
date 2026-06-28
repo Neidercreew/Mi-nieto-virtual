@@ -131,7 +131,7 @@ class _TutorialBateriaScreenState extends State<TutorialBateriaScreen>
     {
       'tipo': 'celebracion_modulo',
       'titulo': '¡Módulo 1\nCompletado! 🎓',
-      'instruccion': 'Has terminado "Conociendo tu celular".\n\nBotones ✅  Pantalla ✅  Navegación ✅\nConfiguraciones ✅  Batería ✅\n\n¡Ya eres un experto básico!',
+      'instruccion': 'Has terminado "Conociendo tu celular".\n\nBotones ✅  Pantalla ✅  Navegación ✅\nConfiguraciones ✅  Batería ✅\n\n¡Felicidades, has terminado el primer modulo, que gran avance!!',
       'icono': Icons.emoji_events_rounded,
       'colorIcono': const Color(0xFFFFB300),
     },
