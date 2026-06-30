@@ -10,6 +10,7 @@ import 'tutorial_pantalla_tactil.dart';
 import 'tutorial_moviendote.dart';
 import 'tutorial_configuraciones.dart';
 import 'tutorial_bateria.dart';
+import 'tutorial_reconociendo_iconos.dart';
 
 class TutorialApp {
   final String nombre;
@@ -118,31 +119,50 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
       )),
     ),
 
-    TutorialApp(
-      nombre: 'Cómo navegar',
-      imagenAsset: 'assets/icons/navegar.png',
-      fondo: const Color(0xFFFFFFFF),
-      nivel: 'basico',
-      onTap: () => Navigator.push(context, MaterialPageRoute(
-        builder: (_) => MapaLeccionesScreen(
-          moduloTitulo: 'Cómo navegar',
-          lecciones: [
-            LeccionMapa(
-              leccionId: 'navegar_leccion1',
-              titulo: 'Abrir aplicaciones',
-              emoji: '🧭',
-              builder: () => const ProximamenteScreen(titulo: 'Abrir aplicaciones'),
-            ),
-            LeccionMapa(
-              leccionId: 'navegar_leccion2',
-              titulo: 'Internet básico',
-              emoji: '🌐',
-              builder: () => const ProximamenteScreen(titulo: 'Internet básico'),
-            ),
-          ],
+   TutorialApp(
+  nombre: 'Cómo navegar',
+  imagenAsset: 'assets/icons/navegar.png',
+  fondo: const Color(0xFFFFFFFF),
+  nivel: 'basico',
+  onTap: () => Navigator.push(context, MaterialPageRoute(
+    builder: (_) => MapaLeccionesScreen(
+      moduloTitulo: 'Cómo navegar',
+      lecciones: [
+        LeccionMapa(
+          leccionId: 'reconociendo_iconos',
+          titulo: 'Reconociendo íconos',
+          emoji: '📱',
+          builder: () => const TutorialReconociendoIconosScreen(),
+          builderDesde: (paso) => TutorialReconociendoIconosScreen(pasoInicial: paso),
         ),
-      )),
+        LeccionMapa(
+          leccionId: 'abrir_cerrar_apps',
+          titulo: 'Abriendo y cerrando apps',
+          emoji: '📲',
+          builder: () => const ProximamenteScreen(titulo: 'Abriendo y cerrando apps'),
+        ),
+        LeccionMapa(
+          leccionId: 'cambiando_apps',
+          titulo: 'Cambiando entre apps',
+          emoji: '🔄',
+          builder: () => const ProximamenteScreen(titulo: 'Cambiando entre apps'),
+        ),
+        LeccionMapa(
+          leccionId: 'me_equivoque',
+          titulo: 'Me equivoqué, ¿y ahora qué?',
+          emoji: '🆘',
+          builder: () => const ProximamenteScreen(titulo: 'Me equivoqué, ¿y ahora qué?'),
+        ),
+        LeccionMapa(
+          leccionId: 'buscar_descargar',
+          titulo: 'Buscando y descargando apps',
+          emoji: '🔍',
+          builder: () => const ProximamenteScreen(titulo: 'Buscando y descargando apps'),
+        ),
+      ],
     ),
+  )),
+),
 
     TutorialApp(
       nombre: 'Cámara de tu celular',
