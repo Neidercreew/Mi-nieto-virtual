@@ -55,7 +55,7 @@ class _MapaLeccionesScreenState extends State<MapaLeccionesScreen> {
     if (userId != null) {
       final progreso = await ApiService.obtenerProgreso(userId);
       final lista = progreso?['progreso'] as List<dynamic>? ?? [];
-
+    
       final Map<String, bool> map = {};
       for (var item in lista) {
         map[item['leccionId']] = item['completada'] ?? false;

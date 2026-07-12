@@ -12,6 +12,7 @@ import 'tutorial_configuraciones.dart';
 import 'tutorial_bateria.dart';
 import 'tutorial_reconociendo_iconos.dart';
 import 'tutorial_abrir_cerrar_apps.dart';
+import 'tutorial_cambiando_apps.dart';
 
 class TutorialApp {
   final String nombre;
@@ -142,7 +143,8 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
               leccionId: 'cambiando_apps',
               titulo: 'Cambiando entre apps',
               emoji: '🔄',
-              builder: () => const ProximamenteScreen(titulo: 'Cambiando entre apps'),
+              builder: () => const TutorialCambiandoAppsScreen(),
+              builderDesde: (paso) => TutorialCambiandoAppsScreen(pasoInicial: paso),
             ),
             LeccionMapa(
               leccionId: 'buscar_descargar',
@@ -455,7 +457,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
         'lecciones': [
           {'id': 'reconociendo_iconos', 'titulo': 'Reconociendo íconos', 'emoji': '📱', 'pasos': 11},
           {'id': 'abrir_cerrar_apps', 'titulo': 'Abriendo y cerrando apps', 'emoji': '📲', 'pasos': 13},
-          {'id': 'cambiando_apps', 'titulo': 'Cambiando entre apps', 'emoji': '🔄', 'pasos': 10},
+          {'id': 'cambiando_apps', 'titulo': 'Cambiando entre apps', 'emoji': '🔄', 'pasos': 13},
           {'id': 'me_equivoque', 'titulo': 'Me equivoqué, ¿y ahora qué?', 'emoji': '🆘', 'pasos': 10},
           {'id': 'buscar_descargar', 'titulo': 'Buscando y descargando apps', 'emoji': '🔍', 'pasos': 10},
         ],
