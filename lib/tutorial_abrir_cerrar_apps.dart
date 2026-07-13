@@ -169,7 +169,7 @@ class _TutorialAbrirCerrarAppsScreenState
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getString('usuario_id');
     final esUltimo = _pasoActual == _pasos.length - 1;
-
+    print('>>> GUARDANDO: paso=${_pasoActual + 1}, esUltimo=$esUltimo, leccion=$_leccionId');
     if (userId != null) {
       await ApiService.guardarPaso(userId, _leccionId, _pasoActual + 1, completada: esUltimo);
     }
