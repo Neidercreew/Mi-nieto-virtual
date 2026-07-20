@@ -15,6 +15,7 @@ import 'tutorial_abrir_cerrar_apps.dart';
 import 'tutorial_cambiando_apps.dart';
 import 'tutorial_buscar_descargar.dart';
 import 'tutorial_cuando_algo_sale_mal.dart';
+import 'tutorial_tomar_foto.dart';
 
 class TutorialApp {
   final String nombre;
@@ -177,16 +178,35 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
           moduloTitulo: 'Cámara de tu celular',
           lecciones: [
             LeccionMapa(
-              leccionId: 'camara_leccion1',
-              titulo: 'Tomar una foto',
+              leccionId: 'camara_tomar_foto',
+              titulo: 'Tomar tu primera foto',
               emoji: '📷',
-              builder: () => const ProximamenteScreen(titulo: 'Tomar una foto'),
+              builder: () => const TutorialTomarFotoScreen(),
+              builderDesde: (paso) => TutorialTomarFotoScreen(pasoInicial: paso),
             ),
             LeccionMapa(
-              leccionId: 'camara_leccion2',
-              titulo: 'Ver tus fotos',
+              leccionId: 'camara_selfie',
+              titulo: 'Tomarte una selfie',
+              emoji: '🤳',
+              builder: () => const ProximamenteScreen(titulo: 'Tomarte una selfie'),
+            ),
+            LeccionMapa(
+              leccionId: 'camara_video',
+              titulo: 'Grabar un video',
+              emoji: '🎥',
+              builder: () => const ProximamenteScreen(titulo: 'Grabar un video'),
+            ),
+            LeccionMapa(
+              leccionId: 'camara_galeria',
+              titulo: 'Ver tus fotos y videos',
               emoji: '🖼️',
-              builder: () => const ProximamenteScreen(titulo: 'Ver tus fotos'),
+              builder: () => const ProximamenteScreen(titulo: 'Ver tus fotos y videos'),
+            ),
+            LeccionMapa(
+              leccionId: 'camara_borrar',
+              titulo: ' Borrar lo que no quieres',
+              emoji: '🗑️',
+              builder: () => const ProximamenteScreen(titulo: 'Borrar lo que no quieres'),
             ),
           ],
         ),
@@ -475,8 +495,11 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
       {
         'titulo': '📷 Cámara de tu celular',
         'lecciones': [
-          {'id': 'camara_leccion1', 'titulo': 'Tomar una foto', 'emoji': '📷', 'pasos': 10},
-          {'id': 'camara_leccion2', 'titulo': 'Ver tus fotos', 'emoji': '🖼️', 'pasos': 10},
+          {'id': 'camara_tomar_foto', 'titulo': 'Tomar tu primera foto', 'emoji': '📷', 'pasos': 9},
+          {'id': 'camara_selfie', 'titulo': 'Tomarte una selfie', 'emoji': '🤳', 'pasos': 8},
+          {'id': 'camara_video', 'titulo': 'Grabar un video', 'emoji': '🎥', 'pasos': 8},
+          {'id': 'camara_galeria', 'titulo': 'Ver tus fotos y videos', 'emoji': '🖼️', 'pasos': 8},
+          {'id': 'camara_borrar', 'titulo': 'Borrar lo que no quieres', 'emoji': '🗑️', 'pasos': 8},
         ],
       },
       {
