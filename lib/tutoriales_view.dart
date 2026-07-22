@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'services/api_service.dart';
 import 'seleccion_nivel.dart';
@@ -16,7 +17,10 @@ import 'tutorial_cambiando_apps.dart';
 import 'tutorial_buscar_descargar.dart';
 import 'tutorial_cuando_algo_sale_mal.dart';
 import 'tutorial_tomar_foto.dart';
-
+import 'tutorial_selfie.dart';
+import 'tutorial_grabar_video.dart';
+import 'tutorial_galeria.dart';
+import 'tutorial_borrar_fotos.dart';
 class TutorialApp {
   final String nombre;
   final String imagenAsset;
@@ -188,25 +192,29 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
               leccionId: 'camara_selfie',
               titulo: 'Tomarte una selfie',
               emoji: '🤳',
-              builder: () => const ProximamenteScreen(titulo: 'Tomarte una selfie'),
+              builder: () => const TutorialSelfieScreen(),
+              builderDesde: (paso) => TutorialSelfieScreen(pasoInicial: paso),
             ),
             LeccionMapa(
               leccionId: 'camara_video',
               titulo: 'Grabar un video',
               emoji: '🎥',
-              builder: () => const ProximamenteScreen(titulo: 'Grabar un video'),
+              builder: () => const TutorialGrabarVideoScreen(),
+              builderDesde: (paso) => TutorialGrabarVideoScreen(pasoInicial: paso),
             ),
             LeccionMapa(
               leccionId: 'camara_galeria',
               titulo: 'Ver tus fotos y videos',
               emoji: '🖼️',
-              builder: () => const ProximamenteScreen(titulo: 'Ver tus fotos y videos'),
+              builder: () => const TutorialGaleriaScreen (),
+              builderDesde: (paso) => TutorialGaleriaScreen(pasoInicial: paso),
             ),
             LeccionMapa(
               leccionId: 'camara_borrar',
               titulo: ' Borrar lo que no quieres',
               emoji: '🗑️',
-              builder: () => const ProximamenteScreen(titulo: 'Borrar lo que no quieres'),
+              builder: () => const TutorialBorrarFotosScreen(),
+              builderDesde:(paso) => TutorialBorrarFotosScreen(pasoInicial: paso),
             ),
           ],
         ),
@@ -496,10 +504,10 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
         'titulo': '📷 Cámara de tu celular',
         'lecciones': [
           {'id': 'camara_tomar_foto', 'titulo': 'Tomar tu primera foto', 'emoji': '📷', 'pasos': 9},
-          {'id': 'camara_selfie', 'titulo': 'Tomarte una selfie', 'emoji': '🤳', 'pasos': 8},
-          {'id': 'camara_video', 'titulo': 'Grabar un video', 'emoji': '🎥', 'pasos': 8},
-          {'id': 'camara_galeria', 'titulo': 'Ver tus fotos y videos', 'emoji': '🖼️', 'pasos': 8},
-          {'id': 'camara_borrar', 'titulo': 'Borrar lo que no quieres', 'emoji': '🗑️', 'pasos': 8},
+          {'id': 'camara_selfie', 'titulo': 'Tomarte una selfie', 'emoji': '🤳', 'pasos': 10},
+          {'id': 'camara_video', 'titulo': 'Grabar un video', 'emoji': '🎥', 'pasos': 13},
+          {'id': 'camara_galeria', 'titulo': 'Ver tus fotos y videos', 'emoji': '🖼️', 'pasos': 11},
+          {'id': 'camara_borrar', 'titulo': 'Borrar lo que no quieres', 'emoji': '🗑️', 'pasos': 14},
         ],
       },
       {
