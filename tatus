@@ -1,0 +1,24 @@
+* [33mfa1974a[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/detalle-tutorial[m[33m)[m feat: boton flotante limpio sin barra e iconos propios en modulos basicos
+* [33m6627c6f[m Revert "fix: eliminando carpeta lib duplicada de la raiz"
+* [33m72bd446[m fix: eliminando carpeta lib duplicada de la raiz
+* [33mb7953f2[m feat: leccion 2, 3, mapa lecciones, api service y pantalla tactil
+* [33m2f99e4d[m version final hasta la primera leccion, siguiente sera el mapa para la siguiente leccion
+[31m|[m * [33m88210fc[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m feat, lecciones, grabar video, selfie, galeria y borrar fotos, fix: arreglamos el bug de el mouse con tactil
+[31m|[m * [33md563f02[m feat: leccion 1 modulo de camara backend already working
+[31m|[m * [33m644930f[m feat: leccion 5 modulo 2 cuando algo sale mal, simulador de reinicio
+[31m|[m * [33mfb37efb[m feat: leccion 4 modulo 2 completed
+[31m|[m * [33mbe8cb23[m feat: leccion 3 modulo 2 cambiando entre apps con simulador interactivo
+[31m|[m * [33mb82a4f6[m feat: leccion 2 abriendo y cerrando apps, dashboard dinamico por modulo, fix backend completada
+[31m|[m * [33m7f41480[m leccion 1 modulo 2, faltan algunos fixes
+[31m|[m * [33m08c4218[m guardando modulo uno
+[31m|[m *   [33m045acb3[m leccion_bateria, primer modulo completado
+[31m|[m [33m|[m[34m\[m  
+[31m|[m [33m|[m * [33m73f0653[m Delete FLUTTER MNV/mi_nieto_virtual/lib directory
+[31m|[m [33m|[m[31m/[m  
+[31m|[m[31m/[m[33m|[m   
+[31m|[m * [33m9425243[m leccion 4, configuraciones esenciales
+[31m|[m[31m/[m  
+* [33m157b8ca[m subiendo all attachments
+* [33me06493c[m feat: leccion 3 completa con botones reales de android y panel de notificaciones animado
+* [33m4e56bfd[m feature: poniendo el api correctamente para conectar con railway
+* [33mf62f18f[m leccion 2 pantalla tactil-carril deslizamiento, animacion dedo, scroll en tiempo real, practicas 3 y 4 con progreso en el dashboard
