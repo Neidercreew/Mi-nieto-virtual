@@ -21,12 +21,14 @@ import 'tutorial_selfie.dart';
 import 'tutorial_grabar_video.dart';
 import 'tutorial_galeria.dart';
 import 'tutorial_borrar_fotos.dart';
+import 'tutorial_hacer_llamada.dart';
 class TutorialApp {
   final String nombre;
   final String imagenAsset;
   final Color fondo;
   final String nivel;
   final VoidCallback? onTap;
+  final IconData? icono;
 
   const TutorialApp({
     required this.nombre,
@@ -34,6 +36,7 @@ class TutorialApp {
     required this.fondo,
     required this.nivel,
     this.onTap,
+    this.icono,
   });
 }
 
@@ -79,6 +82,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
       imagenAsset: 'assets/icons/celular.png',
       fondo: const Color(0xFFFFFFFF),
       nivel: 'basico',
+      icono: Icons.smartphone_rounded,
       onTap: () => Navigator.push(context, MaterialPageRoute(
         builder: (_) => MapaLeccionesScreen(
           moduloTitulo: 'Conociendo tu celular',
@@ -128,6 +132,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
       imagenAsset: 'assets/icons/navegar.png',
       fondo: const Color(0xFFFFFFFF),
       nivel: 'basico',
+      icono: Icons.apps_rounded,
       onTap: () => Navigator.push(context, MaterialPageRoute(
         builder: (_) => MapaLeccionesScreen(
           moduloTitulo: 'Cómo navegar',
@@ -177,6 +182,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
       imagenAsset: 'assets/icons/camara.png',
       fondo: const Color(0xFFFFFFFF),
       nivel: 'basico',
+      icono: Icons.photo_camera_rounded,
       onTap: () => Navigator.push(context, MaterialPageRoute(
         builder: (_) => MapaLeccionesScreen(
           moduloTitulo: 'Cámara de tu celular',
@@ -226,15 +232,17 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
       imagenAsset: 'assets/icons/telefono.png',
       fondo: const Color(0xFFFFFFFF),
       nivel: 'basico',
+      icono: Icons.phone_rounded,
       onTap: () => Navigator.push(context, MaterialPageRoute(
         builder: (_) => MapaLeccionesScreen(
           moduloTitulo: 'Teléfono de tu celular',
           lecciones: [
             LeccionMapa(
-              leccionId: 'telefono_leccion1',
+              leccionId: 'telefono_hacer_llamada',
               titulo: 'Hacer una llamada',
               emoji: '📞',
-              builder: () => const ProximamenteScreen(titulo: 'Hacer una llamada'),
+              builder: () => const TutorialHacerLlamadaScreen(),
+              builderDesde: (paso) => TutorialHacerLlamadaScreen(pasoInicial: paso),
             ),
             LeccionMapa(
               leccionId: 'telefono_leccion2',
@@ -296,6 +304,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF0EEFF),
+      extendBody: true,
       appBar: AppBar(
         backgroundColor: const Color(0xFFF0EEFF),
         elevation: 0,
@@ -362,7 +371,8 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: _buildBottomNav(),
+      floatingActionButton: _buildBotonFlotante(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 
@@ -445,19 +455,17 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(
-              width: 70, height: 70,
-              child: Image.asset(
-                app.imagenAsset,
-                fit: BoxFit.contain,
-                errorBuilder: (_, __, ___) => Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 6)],
-                  ),
-                  child: const Icon(Icons.apps_rounded, size: 40, color: Color(0xFF6B4EFF)),
-                ),
+            Container(
+              width: 74, height: 74,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                shape: BoxShape.circle,
+                boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 6)],
+              ),
+              child: Icon(
+                app.icono ?? Icons.apps_rounded,
+                size: 42,
+                color: const Color(0xFF6B4EFF),
               ),
             ),
             const SizedBox(height: 12),
@@ -513,8 +521,8 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
       {
         'titulo': '📞 Teléfono de tu celular',
         'lecciones': [
-          {'id': 'telefono_leccion1', 'titulo': 'Hacer una llamada', 'emoji': '📞', 'pasos': 10},
-          {'id': 'telefono_leccion2', 'titulo': 'Guardar contactos', 'emoji': '👤', 'pasos': 10},
+          {'id': 'telefono_hacer_llamada', 'titulo': 'Hacer una llamada', 'emoji': '📞', 'pasos': 12},
+          {'id': 'telefono_guardar_contactos', 'titulo': 'Guardar contactos', 'emoji': '👤', 'pasos': 10},
         ],
       },
     ];
@@ -779,48 +787,36 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
     return ApiService.obtenerProgreso(userId);
   }
 
-  Widget _buildBottomNav() {
-    return Container(
-      height: 80,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.08), blurRadius: 12, offset: const Offset(0, -3))],
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          _navIcon(Icons.home_rounded, 0),
-          _navIcon(Icons.calendar_today_rounded, 1),
-          GestureDetector(
-            onTap: () {},
-            child: Container(
-              width: 68, height: 68,
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFB300),
-                shape: BoxShape.circle,
-                boxShadow: [BoxShadow(color: const Color(0xFFFFB300).withOpacity(0.45), blurRadius: 16, offset: const Offset(0, 5))],
-              ),
-              child: Stack(
-                alignment: Alignment.center,
-                children: [
-                  const Icon(Icons.shield_rounded, color: Colors.white, size: 40),
-                  Positioned(
-                    bottom: 12, right: 10,
-                    child: Container(
-                      padding: const EdgeInsets.all(2),
-                      decoration: const BoxDecoration(color: Color(0xFFFFB300), shape: BoxShape.circle),
-                      child: const Icon(Icons.search_rounded, color: Colors.white, size: 18),
-                    ),
-                  ),
-                ],
+  Widget _buildBotonFlotante() {
+    return GestureDetector(
+      onTap: () {},
+      child: Container(
+        width: 86, height: 86,
+        decoration: BoxDecoration(
+          color: const Color(0xFFFFB300),
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: const Color(0xFFFFB300).withOpacity(0.5),
+              blurRadius: 20,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Stack(
+          alignment: Alignment.center,
+          children: [
+            const Icon(Icons.shield_rounded, color: Colors.white, size: 50),
+            Positioned(
+              bottom: 16, right: 14,
+              child: Container(
+                padding: const EdgeInsets.all(2),
+                decoration: const BoxDecoration(color: Color(0xFFFFB300), shape: BoxShape.circle),
+                child: const Icon(Icons.search_rounded, color: Colors.white, size: 22),
               ),
             ),
-          ),
-          _navIcon(Icons.menu_book_rounded, 3),
-          _navIcon(Icons.person_rounded, 4),
-        ],
+          ],
+        ),
       ),
     );
   }
