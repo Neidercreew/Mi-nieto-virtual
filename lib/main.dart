@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'registro_nombre.dart';
+import 'login_screen.dart';
 //import 'menu_principal.dart'; // Agregamos este para que lo reconozca
 
 void main() {
@@ -78,6 +79,28 @@ class WelcomeScreen extends StatelessWidget {
                 child: const Text(
                   "Empezar",
                   style: TextStyle(fontSize: 22, color: Colors.white)
+                ),
+              ),
+            ),
+
+            // Boton para quien ya tiene cuenta
+            Padding(
+              padding: const EdgeInsets.only(bottom: 30),
+              child: TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  );
+                },
+                child: const Text(
+                  "Ya tengo mi cuenta",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Color(0xFF6200EE),
+                    fontWeight: FontWeight.w600,
+                    decoration: TextDecoration.underline,
+                  ),
                 ),
               ),
             ),
