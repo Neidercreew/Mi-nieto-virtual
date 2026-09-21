@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'tutoriales_view.dart'; // 👈 IMPORTA LA PANTALLA DE TUTORIALES
+import 'tutoriales_view.dart'; 
+import 'perfil_screen.dart';
 
 class MenuPrincipalScreen extends StatefulWidget {
   const MenuPrincipalScreen({super.key});
@@ -91,13 +92,38 @@ class _MenuPrincipalScreenState extends State<MenuPrincipalScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                "¡Hola, $nombre!",
-                style: const TextStyle(color: Colors.white70, fontSize: 18),
+              Expanded(
+                child: Text(
+                  "¡Hola, $nombre!",
+                  style: const TextStyle(color: Colors.white70, fontSize: 18),
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-              const CircleAvatar(
-                backgroundColor: Colors.white24,
-                child: Icon(Icons.person, color: Colors.white),
+              const SizedBox(width: 12),
+              // Boton de perfil: abre el perfil y recarga el nombre al volver
+              InkWell(
+                borderRadius: BorderRadius.circular(34),
+                onTap: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const PerfilScreen()),
+                  );
+                  _cargarNombre();
+                },
+                child: Container(
+                  width: 68,
+                  height: 68,
+                  decoration: BoxDecoration(
+                    color: Colors.white24,
+                    shape: BoxShape.circle,
+                    border: Border.all(color: Colors.white54, width: 2),
+                  ),
+                  child: const Icon(
+                    Icons.person,
+                    color: Colors.white,
+                    size: 38,
+                  ),
+                ),
               ),
             ],
           ),
