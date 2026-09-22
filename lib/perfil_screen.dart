@@ -205,13 +205,13 @@ class _PerfilScreenState extends State<PerfilScreen> {
     }
   }
 
-  // Borra solo las llaves de la sesion, no el resto de preferencias
-  Future<void> _cerrarSesion() async {
+  
+    Future<void> _cerrarSesion() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('usuario_id');
     await prefs.remove('nombre_usuario');
     await prefs.remove('nivel_usuario');
-    await prefs.remove('telefono_usuario');
+    // telefono_usuario se mantiene guardado a proposito
 
     if (!mounted) return;
     Navigator.pushAndRemoveUntil(
