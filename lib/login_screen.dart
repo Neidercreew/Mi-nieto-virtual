@@ -16,9 +16,35 @@ class _LoginScreenState extends State<LoginScreen> {
 
   String _telefono = '';
   String _pin = '';
+  String _telefonoGuardado = '';
 
   bool _cargando = false;
   String? _error;
+
+    @override
+  void initState() {
+    super.initState();
+    _cargarTelefonoGuardado();
+  }
+
+  // Lee el numero guardado, pero NO lo pone en pantalla todavia
+  Future<void> _cargarTelefonoGuardado() async {
+    final prefs = await SharedPreferences.getInstance();
+    final guardado = prefs.getString('telefono_usuario') ?? '';
+    if (!mounted) return;
+    // Solo aceptamos exactamente 10 digitos
+    if (RegExp(r'^\d{10}$').hasMatch(guardado)) {
+      setState(() => _telefonoGuardado = guardado);
+    }
+  }
+
+  // El usuario acepta la sugerencia: se llena el campo, sin cambiar de pantalla
+  void _usarNumeroGuardado() {
+    setState(() {
+      _error = null;
+      _telefono = _telefonoGuardado;
+    });
+  }
 
   void _siguientePaso() {
     setState(() {
@@ -236,6 +262,11 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
           const SizedBox(height: 12),
+          // Solo aparece si hay numero guardado y el campo esta vacio
+          if (_telefonoGuardado.isNotEmpty && _telefono.isEmpty) ...[
+            _buildSugerenciaTelefono(),
+            const SizedBox(height: 12),
+          ],
           _buildConsejo(
               'Con tu número y tu clave recuperas todo tu avance, aunque sea otro celular.'),
         ],
@@ -310,6 +341,69 @@ class _LoginScreenState extends State<LoginScreen> {
           const SizedBox(height: 20),
           _buildConsejo(
               'Son los mismos 4 números que elegiste cuando creaste tu cuenta.'),
+        ],
+      ),
+    );
+  }
+
+    // Tarjeta que sugiere el numero guardado; el usuario decide si la usa
+  Widget _buildSugerenciaTelefono() {
+    const verde = Color(0xFF059669);
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: verde.withOpacity(0.08),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: verde.withOpacity(0.35), width: 1.5),
+      ),
+      child: Column(
+        children: [
+          const Text(
+            'Usaste este número la última vez',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                color: Color(0xFF555577),
+                fontSize: 14,
+                fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            _formatoTel(_telefonoGuardado),
+            style: const TextStyle(
+                color: Color(0xFF1A1A2E),
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 2),
+          ),
+          const SizedBox(height: 10),
+          Material(
+            color: verde,
+            borderRadius: BorderRadius.circular(14),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(14),
+              onTap: _usarNumeroGuardado,
+              child: const SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: Center(
+                  child: Text(
+                    'Usar este número',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'O escribe otro con los números de abajo',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Color(0xFF777799), fontSize: 13),
+          ),
         ],
       ),
     );
