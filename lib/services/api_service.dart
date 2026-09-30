@@ -101,7 +101,24 @@ class ApiService {
       print('❌ guardarPaso error: $e');
     }
   }
+  // ── ACTUALIZAR NIVEL ───────────────────────────────────────
+  static Future<bool> actualizarNivel(String usuarioId, String nivel) async {
+    try {
+      final res = await http
+          .put(
+            Uri.parse('$_base/usuarios/$usuarioId/nivel'),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({'nivel': nivel}),
+          )
+          .timeout(const Duration(seconds: 8));
 
+      // Cualquier 2xx significa que el servidor acepto el cambio
+      return res.statusCode >= 200 && res.statusCode < 300;
+    } catch (e) {
+      print('❌ actualizarNivel error: $e');
+      return false;
+    }
+  }
   // ── OBTENER PROGRESO ───────────────────────────────────────
   static Future<Map<String, dynamic>?> obtenerProgreso(
       String usuarioId) async {

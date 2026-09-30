@@ -33,6 +33,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
   bool _progresoDisponible = false;
 
   bool _cargando = true;
+  bool _guardandoNivel = false;
 
   @override
   void initState() {
@@ -205,8 +206,7 @@ class _PerfilScreenState extends State<PerfilScreen> {
     }
   }
 
-  
-    Future<void> _cerrarSesion() async {
+  Future<void> _cerrarSesion() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('usuario_id');
     await prefs.remove('nombre_usuario');
@@ -218,6 +218,206 @@ class _PerfilScreenState extends State<PerfilScreen> {
       context,
       MaterialPageRoute(builder: (_) => const WelcomeScreen()),
       (route) => false,
+    );
+  }
+
+  // Abre la hoja de abajo con los 3 niveles
+  Future<void> _abrirSelectorNivel() async {
+    final actual = _nivel.isEmpty ? 'basico' : _nivel.toLowerCase();
+
+    final elegido = await showModalBottomSheet<String>(
+      context: context,
+      backgroundColor: Colors.white,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(30)),
+      ),
+      builder: (sheetContext) => SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(22, 14, 22, 22),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Rayita que indica que la hoja se puede bajar
+              Center(
+                child: Container(
+                  width: 50,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: _borde,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              const Text(
+                "Elige tu nivel",
+                style: TextStyle(
+                  fontSize: 26,
+                  fontWeight: FontWeight.bold,
+                  color: _texto,
+                ),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                "Tu avance no se pierde. Puedes cambiar de nivel cuando quieras.",
+                style: TextStyle(fontSize: 18, color: _suave, height: 1.35),
+              ),
+              const SizedBox(height: 20),
+              _buildOpcionNivel(
+                sheetContext,
+                'basico',
+                'Básico',
+                'Lo esencial: botones, cámara y llamadas',
+                Icons.smartphone_rounded,
+                actual,
+              ),
+              _buildOpcionNivel(
+                sheetContext,
+                'intermedio',
+                'Intermedio',
+                'WhatsApp, correo, mensajes y calendario',
+                Icons.chat_rounded,
+                actual,
+              ),
+              _buildOpcionNivel(
+                sheetContext,
+                'avanzado',
+                'Avanzado',
+                'Pagos y dinero con Nequi',
+                Icons.account_balance_wallet_rounded,
+                actual,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    // Si cerro la hoja sin elegir, o eligio el mismo, no hace nada
+    if (elegido != null && elegido != actual) {
+      await _cambiarNivel(elegido);
+    }
+  }
+
+  // Una opcion grande de nivel dentro de la hoja
+  Widget _buildOpcionNivel(
+    BuildContext sheetContext,
+    String valor,
+    String titulo,
+    String descripcion,
+    IconData icono,
+    String actual,
+  ) {
+    final esActual = valor == actual;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: GestureDetector(
+        onTap: () => Navigator.pop(sheetContext, valor),
+        child: Container(
+          padding: const EdgeInsets.all(18),
+          decoration: BoxDecoration(
+            color: esActual ? _morado.withOpacity(0.08) : Colors.white,
+            borderRadius: BorderRadius.circular(22),
+            border: Border.all(
+              color: esActual ? _morado : _borde,
+              width: esActual ? 3 : 2,
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: _morado.withOpacity(0.12),
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Icon(icono, size: 30, color: _morado),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      titulo,
+                      style: const TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: _texto,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      descripcion,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        color: _suave,
+                        height: 1.3,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (esActual) ...[
+                const SizedBox(width: 8),
+                const Icon(Icons.check_circle_rounded, color: _verde, size: 32),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Guarda el nivel en el servidor y luego en el celular
+  Future<void> _cambiarNivel(String nuevo) async {
+    final id = _usuarioId;
+    if (id == null || id.isEmpty) {
+      _mostrarAviso(
+        "No encontramos tu cuenta. Vuelve a entrar e intenta de nuevo.",
+        _rojo,
+      );
+      return;
+    }
+
+    setState(() => _guardandoNivel = true);
+    final ok = await ApiService.actualizarNivel(id, nuevo);
+    if (!mounted) return;
+
+    if (ok) {
+      // Solo se guarda local si el servidor acepto el cambio
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('nivel_usuario', nuevo);
+      if (!mounted) return;
+      setState(() {
+        _nivel = nuevo;
+        _guardandoNivel = false;
+      });
+      _mostrarAviso("Listo. Ahora estás en nivel $_nivelBonito.", _verde);
+    } else {
+      setState(() => _guardandoNivel = false);
+      _mostrarAviso(
+        "No pudimos cambiar tu nivel. Revisa tu internet e intenta de nuevo.",
+        _rojo,
+      );
+    }
+  }
+
+  // Mensaje flotante grande abajo de la pantalla
+  void _mostrarAviso(String texto, Color color) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(texto, style: const TextStyle(fontSize: 18)),
+        backgroundColor: color,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+        duration: const Duration(seconds: 4),
+      ),
     );
   }
 
@@ -247,8 +447,9 @@ class _PerfilScreenState extends State<PerfilScreen> {
                       _buildDatoCard(
                         Icons.school_rounded,
                         "Tu nivel",
-                        _nivelBonito,
+                        _guardandoNivel ? "Guardando..." : _nivelBonito,
                         _verde,
+                        onTap: _guardandoNivel ? null : _abrirSelectorNivel,
                       ),
                       const SizedBox(height: 16),
                       _buildBotonCambiarCuenta(),
@@ -468,55 +669,84 @@ class _PerfilScreenState extends State<PerfilScreen> {
     IconData icono,
     String etiqueta,
     String valor,
-    Color color,
-  ) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(25),
-        border: Border.all(color: _borde, width: 2),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 15,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: color.withOpacity(0.12),
-              borderRadius: BorderRadius.circular(18),
+    Color color, {
+    VoidCallback? onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 16),
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(25),
+          border: Border.all(color: _borde, width: 2),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 15,
+              offset: const Offset(0, 8),
             ),
-            child: Icon(icono, size: 34, color: color),
-          ),
-          const SizedBox(width: 18),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  etiqueta,
-                  style: const TextStyle(fontSize: 17, color: _suave),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  valor,
-                  style: const TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: _texto,
+          ],
+        ),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.12),
+                borderRadius: BorderRadius.circular(18),
+              ),
+              child: Icon(icono, size: 34, color: color),
+            ),
+            const SizedBox(width: 18),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    etiqueta,
+                    style: const TextStyle(fontSize: 17, color: _suave),
                   ),
-                ),
-              ],
+                  const SizedBox(height: 4),
+                  Text(
+                    valor,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: _texto,
+                    ),
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+            // Solo las tarjetas que se pueden cambiar muestran este boton
+            if (onTap != null)
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                decoration: BoxDecoration(
+                  color: _morado.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: const Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.edit_rounded, size: 20, color: _morado),
+                    SizedBox(width: 6),
+                    Text(
+                      "Cambiar",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: _morado,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
