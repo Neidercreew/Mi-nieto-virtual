@@ -22,6 +22,8 @@ import 'tutorial_grabar_video.dart';
 import 'tutorial_galeria.dart';
 import 'tutorial_borrar_fotos.dart';
 import 'tutorial_hacer_llamada.dart';
+import 'tutorial_nequi_conociendo.dart';
+
 class TutorialApp {
   final String nombre;
   final String imagenAsset;
@@ -280,11 +282,62 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
       nivel: 'intermedio',
     ),
     TutorialApp(
-      nombre: 'Nequi',
-      imagenAsset: 'assets/icons/nequi.png',
-      fondo: const Color(0xFFFFFFFF),
-      nivel: 'avanzado',
+  nombre: 'Nequi',
+  imagenAsset: 'assets/icons/nequi.png',
+  fondo: const Color(0xFFFFFFFF),
+  nivel: 'avanzado',
+  icono: Icons.account_balance_wallet_rounded,
+  onTap: () => Navigator.push(context, MaterialPageRoute(
+    builder: (_) => MapaLeccionesScreen(
+      moduloTitulo: 'Nequi',
+      lecciones: [
+        LeccionMapa(
+          leccionId: 'nequi_conociendo',
+          titulo: 'Conociendo Nequi',
+          emoji: '💜',
+          builder: () => const TutorialNequiConociendoScreen(),
+          builderDesde: (paso) => TutorialNequiConociendoScreen(pasoInicial: paso),
+        ),
+        LeccionMapa(
+          leccionId: 'nequi_meter_plata',
+          titulo: 'Meter plata',
+          emoji: '💵',
+          builder: () => const ProximamenteScreen(titulo: 'Meter plata'),
+        ),
+        LeccionMapa(
+          leccionId: 'nequi_enviar_plata',
+          titulo: 'Enviar plata',
+          emoji: '📤',
+          builder: () => const ProximamenteScreen(titulo: 'Enviar plata'),
+        ),
+        LeccionMapa(
+          leccionId: 'nequi_pedir_plata',
+          titulo: 'Pedir plata',
+          emoji: '🙋',
+          builder: () => const ProximamenteScreen(titulo: 'Pedir plata'),
+        ),
+        LeccionMapa(
+          leccionId: 'nequi_pagar_qr',
+          titulo: 'Pagar con QR',
+          emoji: '📷',
+          builder: () => const ProximamenteScreen(titulo: 'Pagar con QR'),
+        ),
+        LeccionMapa(
+          leccionId: 'nequi_sacar_plata',
+          titulo: 'Sacar plata',
+          emoji: '🏧',
+          builder: () => const ProximamenteScreen(titulo: 'Sacar plata'),
+        ),
+        LeccionMapa(
+          leccionId: 'nequi_anti_estafas',
+          titulo: 'Nequi seguro',
+          emoji: '🛡️',
+          builder: () => const ProximamenteScreen(titulo: 'Nequi seguro'),
+        ),
+      ],
     ),
+  )),
+),
   ];
 
   List<TutorialApp> get _appsFiltradas {
@@ -486,10 +539,23 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
   }
 
   // Dashboard de progreso del usuario con todas sus lecciones
+    // Nombre bonito del nivel para la tarjeta de progreso
+  String get _tituloNivel {
+    switch (_nivelUsuario) {
+      case 'intermedio':
+        return 'Nivel Intermedio';
+      case 'avanzado':
+        return 'Nivel Avanzado';
+      default:
+        return 'Nivel Básico';
+    }
+  }
   Widget _buildMiProgreso() {
-    final modulos = [
+      final todosLosModulos = [
       {
         'titulo': '📱 Conociendo tu celular',
+                'titulo': '📱 Conociendo tu celular',
+        'nivel': 'basico',
         'lecciones': [
           {'id': 'conociendo_tu_celular', 'titulo': 'Botones físicos', 'emoji': '🔘', 'pasos': 7},
           {'id': 'pantalla_tactil', 'titulo': 'La pantalla táctil', 'emoji': '👆', 'pasos': 14},
@@ -500,6 +566,8 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
       },
       {
         'titulo': '🧭 Cómo navegar',
+                'titulo': '📱 Conociendo tu celular',
+        'nivel': 'basico',
         'lecciones': [
           {'id': 'reconociendo_iconos', 'titulo': 'Reconociendo íconos', 'emoji': '📱', 'pasos': 11},
           {'id': 'abrir_cerrar_apps', 'titulo': 'Abriendo y cerrando apps', 'emoji': '📲', 'pasos': 13},
@@ -510,6 +578,8 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
       },
       {
         'titulo': '📷 Cámara de tu celular',
+                'titulo': '📱 Conociendo tu celular',
+        'nivel': 'basico',
         'lecciones': [
           {'id': 'camara_tomar_foto', 'titulo': 'Tomar tu primera foto', 'emoji': '📷', 'pasos': 9},
           {'id': 'camara_selfie', 'titulo': 'Tomarte una selfie', 'emoji': '🤳', 'pasos': 10},
@@ -520,12 +590,22 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
       },
       {
         'titulo': '📞 Teléfono de tu celular',
+                'titulo': '📱 Conociendo tu celular',
+        'nivel': 'basico',
         'lecciones': [
           {'id': 'telefono_hacer_llamada', 'titulo': 'Hacer una llamada', 'emoji': '📞', 'pasos': 12},
           {'id': 'telefono_guardar_contactos', 'titulo': 'Guardar contactos', 'emoji': '👤', 'pasos': 10},
         ],
+       },
+      {
+        'titulo': '💜 Nequi',
+        'nivel': 'avanzado',
+        'lecciones': [
+          {'id': 'nequi_conociendo', 'titulo': 'Conociendo Nequi', 'emoji': '💜', 'pasos': 13},
+        ],
       },
     ];
+        final modulos = todosLosModulos.where((m) => m['nivel'] == _nivelUsuario).toList();
 
     return FutureBuilder<Map<String, dynamic>?>(
       future: _progresoFuture,
@@ -599,7 +679,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Nivel Básico',
+                                  Text(_tituloNivel,
                               style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
                           const SizedBox(height: 6),
                           Text('$totalCompletadas de $totalLecciones lecciones completadas',
