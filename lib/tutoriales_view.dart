@@ -22,6 +22,7 @@ import 'tutorial_grabar_video.dart';
 import 'tutorial_galeria.dart';
 import 'tutorial_borrar_fotos.dart';
 import 'tutorial_hacer_llamada.dart';
+import 'tutorial_guardar_contacto.dart';
 class TutorialApp {
   final String nombre;
   final String imagenAsset;
@@ -245,10 +246,12 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
               builderDesde: (paso) => TutorialHacerLlamadaScreen(pasoInicial: paso),
             ),
             LeccionMapa(
-              leccionId: 'telefono_leccion2',
-              titulo: 'Guardar contactos',
-              emoji: '👤',
-              builder: () => const ProximamenteScreen(titulo: 'Guardar contactos'),
+              leccionId: 'telefono_guardar_contacto',
+              titulo: 'Guardar un contacto',
+              emoji: '📒',
+              builder: () => const TutorialGuardarContactoScreen(),
+              builderDesde: (paso) =>
+                  TutorialGuardarContactoScreen(pasoInicial: paso),
             ),
           ],
         ),
@@ -522,7 +525,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
         'titulo': '📞 Teléfono de tu celular',
         'lecciones': [
           {'id': 'telefono_hacer_llamada', 'titulo': 'Hacer una llamada', 'emoji': '📞', 'pasos': 12},
-          {'id': 'telefono_guardar_contactos', 'titulo': 'Guardar contactos', 'emoji': '👤', 'pasos': 10},
+          {'id': 'telefono_guardar_contactos', 'titulo': 'Guardar un contacto', 'emoji': '👤', 'pasos': 13},
         ],
       },
     ];
