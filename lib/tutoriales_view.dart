@@ -23,6 +23,8 @@ import 'tutorial_galeria.dart';
 import 'tutorial_borrar_fotos.dart';
 import 'tutorial_hacer_llamada.dart';
 import 'tutorial_nequi_conociendo.dart';
+import 'tutorial_guardar_contacto.dart';
+import 'tutorial_devolver_llamada.dart';
 
 class TutorialApp {
   final String nombre;
@@ -247,10 +249,20 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
               builderDesde: (paso) => TutorialHacerLlamadaScreen(pasoInicial: paso),
             ),
             LeccionMapa(
-              leccionId: 'telefono_leccion2',
-              titulo: 'Guardar contactos',
-              emoji: '👤',
-              builder: () => const ProximamenteScreen(titulo: 'Guardar contactos'),
+              leccionId: 'telefono_guardar_contacto',
+              titulo: 'Guardar un contacto',
+              emoji: '📒',
+              builder: () => const TutorialGuardarContactoScreen(),
+              builderDesde: (paso) =>
+                  TutorialGuardarContactoScreen(pasoInicial: paso),
+            ),
+            LeccionMapa(
+                leccionId: 'devolver_llamada',
+                titulo: 'Devolver una llamada',
+                emoji: '📲',
+                builder: () => const TutorialDevolverLlamadaScreen(),
+                builderDesde: (paso) =>
+                TutorialDevolverLlamadaScreen(pasoInicial: paso),
             ),
           ],
         ),
@@ -554,7 +566,6 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
       final todosLosModulos = [
       {
         'titulo': '📱 Conociendo tu celular',
-                'titulo': '📱 Conociendo tu celular',
         'nivel': 'basico',
         'lecciones': [
           {'id': 'conociendo_tu_celular', 'titulo': 'Botones físicos', 'emoji': '🔘', 'pasos': 7},
@@ -566,7 +577,6 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
       },
       {
         'titulo': '🧭 Cómo navegar',
-                'titulo': '📱 Conociendo tu celular',
         'nivel': 'basico',
         'lecciones': [
           {'id': 'reconociendo_iconos', 'titulo': 'Reconociendo íconos', 'emoji': '📱', 'pasos': 11},
@@ -578,7 +588,6 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
       },
       {
         'titulo': '📷 Cámara de tu celular',
-                'titulo': '📱 Conociendo tu celular',
         'nivel': 'basico',
         'lecciones': [
           {'id': 'camara_tomar_foto', 'titulo': 'Tomar tu primera foto', 'emoji': '📷', 'pasos': 9},
@@ -590,11 +599,11 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
       },
       {
         'titulo': '📞 Teléfono de tu celular',
-                'titulo': '📱 Conociendo tu celular',
         'nivel': 'basico',
         'lecciones': [
           {'id': 'telefono_hacer_llamada', 'titulo': 'Hacer una llamada', 'emoji': '📞', 'pasos': 12},
-          {'id': 'telefono_guardar_contactos', 'titulo': 'Guardar contactos', 'emoji': '👤', 'pasos': 10},
+          {'id': 'telefono_guardar_contactos', 'titulo': 'Guardar un contacto', 'emoji': '👤', 'pasos': 13},
+                {'id': 'devolver_llamada', 'titulo': 'Devolver una llamada', 'pasos': 12},
         ],
        },
       {
