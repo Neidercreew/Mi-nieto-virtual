@@ -24,6 +24,7 @@ import 'tutorial_borrar_fotos.dart';
 import 'tutorial_hacer_llamada.dart';
 import 'tutorial_guardar_contacto.dart';
 import 'tutorial_devolver_llamada.dart';
+import 'tutorial_contestar_llamada.dart';
 
 class TutorialApp {
   final String nombre;
@@ -262,6 +263,14 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
                 builder: () => const TutorialDevolverLlamadaScreen(),
                 builderDesde: (paso) =>
                 TutorialDevolverLlamadaScreen(pasoInicial: paso),
+            ),
+            LeccionMapa(
+                leccionId: 'contestar_llamada',
+                titulo: 'Contestar una llamada',
+                emoji: '📲',
+                builder: () => const TutorialContestarLlamadaScreen(),
+                builderDesde: (paso) =>
+                TutorialContestarLlamadaScreen(pasoInicial: paso),
             ),
           ],
         ),
@@ -536,7 +545,8 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
         'lecciones': [
           {'id': 'telefono_hacer_llamada', 'titulo': 'Hacer una llamada', 'emoji': '📞', 'pasos': 12},
           {'id': 'telefono_guardar_contactos', 'titulo': 'Guardar un contacto', 'emoji': '👤', 'pasos': 13},
-                {'id': 'devolver_llamada', 'titulo': 'Devolver una llamada', 'pasos': 12},
+          {'id': 'devolver_llamada', 'titulo': 'Devolver una llamada', 'emoji': '↩️', 'pasos': 12},
+          {'id': 'contestar_llamada', 'titulo': 'Contestar una llamada', 'emoji': '📲', 'pasos': 13},
         ],
       },
     ];
