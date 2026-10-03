@@ -25,11 +25,8 @@ import 'tutorial_hacer_llamada.dart';
 import 'tutorial_nequi_conociendo.dart';
 import 'tutorial_guardar_contacto.dart';
 import 'tutorial_devolver_llamada.dart';
-<<<<<<< HEAD
 import 'tutorial_nequi_meter_plata.dart';
-=======
 import 'tutorial_contestar_llamada.dart';
->>>>>>> origin/main
 
 class TutorialApp {
   final String nombre;
