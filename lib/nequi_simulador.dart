@@ -1057,3 +1057,38 @@ class MensajeExito extends StatelessWidget {
     );
   }
 }
+// Boton para volver al paso anterior
+class BotonPasoAnterior extends StatelessWidget {
+  final VoidCallback onTap;
+  const BotonPasoAnterior({super.key, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 64,
+      height: 60,
+      child: Material(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(18),
+          onTap: onTap,
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(color: NequiColores.mnvMorado, width: 2),
+            ),
+            child: const Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.arrow_back_rounded, color: NequiColores.mnvMorado, size: 24),
+                Text('Atrás',
+                    style: TextStyle(color: NequiColores.mnvMorado, fontSize: 11, fontWeight: FontWeight.bold)),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

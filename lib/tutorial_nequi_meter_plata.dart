@@ -300,6 +300,16 @@ class _TutorialNequiMeterPlataScreenState extends State<TutorialNequiMeterPlataS
     return r == null ? <String>{} : {r};
   }
 
+  // Vuelve al paso anterior sin guardar nada
+  void _retroceder() {
+    if (_pasoActual == 0) return;
+    FocusManager.instance.primaryFocus?.unfocus(); // esconde el teclado si estaba abierto
+    setState(() {
+      _pasoActual--;
+      _prepararPaso();
+    });
+  }
+
   Future<void> _avanzar() async {
     if (!_objetivoCumplido) return;
     final prefs = await SharedPreferences.getInstance();
@@ -383,7 +393,17 @@ class _TutorialNequiMeterPlataScreenState extends State<TutorialNequiMeterPlataS
                     const MensajeExito(),
                   ],
                   const SizedBox(height: 12),
-                  BotonLeccion(texto: textoBoton, activo: _objetivoCumplido, onTap: _avanzar),
+                                    Row(
+                    children: [
+                      if (_pasoActual > 0) ...[
+                        BotonPasoAnterior(onTap: _retroceder),
+                        const SizedBox(width: 10),
+                      ],
+                      Expanded(
+                        child: BotonLeccion(texto: textoBoton, activo: _objetivoCumplido, onTap: _avanzar),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),

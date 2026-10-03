@@ -27,6 +27,7 @@ import 'tutorial_guardar_contacto.dart';
 import 'tutorial_devolver_llamada.dart';
 import 'tutorial_nequi_meter_plata.dart';
 import 'tutorial_contestar_llamada.dart';
+import 'tutorial_nequi_enviar_plata.dart';
 
 class TutorialApp {
   final String nombre;
@@ -330,8 +331,9 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
         LeccionMapa(
           leccionId: 'nequi_enviar_plata',
           titulo: 'Enviar plata',
-          emoji: '📤',
-          builder: () => const ProximamenteScreen(titulo: 'Enviar plata'),
+          emoji: '💸',
+          builder: () => const TutorialNequiEnviarPlataScreen(),
+          builderDesde: (paso) => TutorialNequiEnviarPlataScreen(pasoInicial: paso),
         ),
         LeccionMapa(
           leccionId: 'nequi_pedir_plata',
@@ -624,6 +626,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
         'lecciones': [
           {'id': 'nequi_conociendo', 'titulo': 'Conociendo Nequi', 'emoji': '💜', 'pasos': 12},
           {'id': 'nequi_meter_plata', 'titulo': 'Meter plata a Nequi', 'emoji': '💵', 'pasos': 13},
+          {'id': 'nequi_enviar_plata', 'titulo': 'Enviar plata', 'emoji': '💸', 'pasos': 14},
         ],
       },
     ];
