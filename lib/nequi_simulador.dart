@@ -1030,3 +1030,30 @@ class BotonLeccion extends StatelessWidget {
     );
   }
 }
+// Mensaje verde cuando hizo bien el paso
+class MensajeExito extends StatelessWidget {
+  const MensajeExito({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: NequiColores.mnvVerde.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: NequiColores.mnvVerde, width: 1.5),
+      ),
+      child: const Row(
+        children: [
+          Icon(Icons.check_circle_rounded, color: NequiColores.mnvVerde, size: 22),
+          SizedBox(width: 10),
+          Expanded(
+            child: Text('¡Eso es! Ahora toca el botón verde para seguir.',
+                style: TextStyle(color: NequiColores.mnvVerde, fontSize: 14, fontWeight: FontWeight.w600)),
+          ),
+        ],
+      ),
+    );
+  }
+}

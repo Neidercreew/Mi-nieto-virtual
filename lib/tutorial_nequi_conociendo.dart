@@ -68,22 +68,15 @@ class _TutorialNequiConociendoScreenState extends State<TutorialNequiConociendoS
       'resalta': 'app_nequi',
       'ayuda': 'Toca el ícono de Nequi',
     },
-    {
-      'tipo': 'info',
-      'pantalla': 'clave',
-      'titulo': 'Tu clave de 4 números',
-      'instruccion':
-          'Para entrar, Nequi te pide una clave de 4 números. Es como la clave del cajero: solo tú la sabes.',
-      'consejo': 'Nunca le digas tu clave a nadie, ni siquiera a alguien que diga ser de Nequi o del banco.',
-    },
-    {
+        {
       'tipo': 'simulador',
       'pantalla': 'clave',
-      'titulo': 'Escribe tu clave',
-      'instruccion': 'Tu clave de práctica es 1 2 3 4. Escríbela con el teclado, número por número.',
+      'titulo': 'Entra con tu clave',
+      'instruccion':
+          'Nequi te pide una clave de 4 números, como la del cajero: solo tú la sabes. Tu clave de práctica es 1 2 3 4. Escríbela número por número.',
       'objetivo': 'entrar',
       'ayuda': 'Escribe 1 2 3 4',
-      'consejo': 'Si te equivocas, la tecla lila con la flechita borra el último número.',
+      'consejo': 'Nunca le digas tu clave a nadie, ni siquiera a alguien que diga ser de Nequi o del banco.',
     },
     {
       'tipo': 'simulador',
@@ -252,15 +245,8 @@ class _TutorialNequiConociendoScreenState extends State<TutorialNequiConociendoS
       setState(() => _mensajeGuia = 'Primero lee la caja morada y luego toca "Siguiente".');
       return;
     }
-      // Si ya cumplio el objetivo, el celular espera al boton verde
-    if (_objetivoCumplido) {
-      setState(() => _mensajeGuia = '¡Muy bien, ya lo lograste! Ahora toca el botón verde de abajo para seguir.');
-      return;
-    }
-    if (!_esSimulador) {
-      setState(() => _mensajeGuia = 'Primero lee la caja morada y luego toca "Siguiente".');
-      return;
-    }
+    // Si ya cumplio el objetivo, el celular espera al boton verde
+    if (_objetivoCumplido) return;
     final resalta = _paso['resalta'] as String?;
     setState(() {
       _mensajeGuia = null;
@@ -450,6 +436,8 @@ class _TutorialNequiConociendoScreenState extends State<TutorialNequiConociendoS
                   const SizedBox(height: 10),
                   if (_mensajeGuia != null)
                     MensajeGuia(texto: _mensajeGuia!)
+                  else if (_esSimulador && _objetivoCumplido)
+                    const MensajeExito()
                   else if (consejo != null)
                     ConsejoCalido(texto: consejo),
                   const SizedBox(height: 12),
