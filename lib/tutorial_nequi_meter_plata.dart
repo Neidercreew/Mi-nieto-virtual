@@ -7,17 +7,9 @@ import 'nequi_simulador.dart';
 
 const String _leccionId = 'nequi_meter_plata';
 
-// Plata que se mete en la practica
-const int _montoPractica = 50000;
-const String _montoTexto = '50000';
-
-// Movimiento nuevo que aparece despues de meter la plata
-const NequiMovimiento _movimientoNuevo = NequiMovimiento(
-  'Metiste plata en Tienda Don Pedro',
-  _montoPractica,
-  'Hoy',
-  Icons.storefront_rounded,
-);
+// El usuario decide cuanto meter. Este valor solo se usa si reanuda
+const int _montoPorDefecto = 50000;
+const int _montoMaximo = 500000; // tope para la practica
 
 class TutorialNequiMeterPlataScreen extends StatefulWidget {
   final int pasoInicial; // para reanudar
@@ -90,17 +82,17 @@ class _TutorialNequiMeterPlataScreenState extends State<TutorialNequiMeterPlataS
     {
       'tipo': 'simulador',
       'titulo': 'Dile cuánto vas a meter',
-      'instruccion': 'Estás en la tienda. Le diste tu número y 50.000 pesos en billetes. Ayúdale al cajero a marcar 50.000.',
+      'instruccion': 'Estás en la tienda y ya le diste tu número al cajero. Tú decides cuánta plata meter: márcala en el teclado y toca "Listo".',
       'inicio': 'tienda',
       'objetivo': 'monto_listo',
       'resalta': 'teclas',
-      'ayuda': 'Marca 50.000 en el teclado',
-      'guia': 'Ups, ese número no era. Tranquilo: toca la tecla de borrar y sigue.',
+      'ayuda': 'Marca el valor y toca "Listo"',
+      'guia': 'Primero marca cuánta plata vas a meter y luego toca "Listo".',
     },
     {
       'tipo': 'simulador',
       'titulo': 'Revisa antes de confirmar',
-      'instruccion': 'Mira con calma: ¿el número es el tuyo? ¿el valor es 50.000? Si todo está bien, toca "Sí, está bien".',
+      'instruccion': 'Mira con calma: ¿el número es el tuyo? ¿el valor es el que entregaste? Si todo está bien, toca "Sí, está bien".',
       'inicio': 'tienda_confirmar',
       'objetivo': 'entregado',
       'resalta': 'confirmar',
@@ -126,7 +118,7 @@ class _TutorialNequiMeterPlataScreenState extends State<TutorialNequiMeterPlataS
       'resalta': 'ojo',
       'ayuda': 'Toca el ojito',
       'guia': 'Busca el ojito dentro de la tarjeta rosada, el que está brillando.',
-      'burbujaFinal': 'Antes tenías \$ 250.000. Metiste \$ 50.000. ¡Ahora tienes \$ 300.000!',
+      'burbujaFinal': true,
     },
     {
       'tipo': 'simulador',
@@ -193,7 +185,12 @@ class _TutorialNequiMeterPlataScreenState extends State<TutorialNequiMeterPlataS
     _mostrarNotificacion = false;
 
     // Estado de la historia segun el paso
-    _monto = _pasoActual >= 6 ? _montoTexto : '';
+    // Conserva el valor que marco; si reanuda, pone uno por defecto
+    if (_pasoActual < 6) {
+      _monto = '';
+    } else if (_monto.isEmpty) {
+      _monto = '$_montoPorDefecto';
+    }
     _plataRecibida = _pasoActual >= 7;
     _saldoVisible = _pasoActual != 8; // en el paso 8 esta escondido
 
@@ -241,6 +238,9 @@ class _TutorialNequiMeterPlataScreenState extends State<TutorialNequiMeterPlataS
       case 'instrucciones':
         correcto = accion == 'ir_tienda';
         break;
+      case 'tienda':
+        correcto = accion == 'listo_monto' && _valor > 0;
+        break;
       case 'tienda_confirmar':
         correcto = accion == 'confirmar';
         break;
@@ -268,31 +268,26 @@ class _TutorialNequiMeterPlataScreenState extends State<TutorialNequiMeterPlataS
     });
   }
 
-  // Teclado del cajero en la tienda
+  // Teclado del cajero en la tienda: el usuario marca el valor que quiera
   void _tocarTeclaTienda(String tecla) {
     if (_objetivoCumplido) return;
     setState(() {
       _mensajeGuia = null;
       if (tecla == '⌫') {
         if (_monto.isNotEmpty) _monto = _monto.substring(0, _monto.length - 1);
-      } else if (_monto.length < 7 && !(_monto.isEmpty && tecla == '0')) {
-        _monto += tecla;
+      } else if (!(_monto.isEmpty && tecla == '0')) {
+        final nuevo = _monto + tecla;
+        if (int.parse(nuevo) > _montoMaximo) {
+          _mensajeGuia = 'Para esta práctica, marca un valor de hasta ${formatoPesos(_montoMaximo)}.';
+        } else {
+          _monto = nuevo;
+        }
       }
-      if (!_montoTexto.startsWith(_monto)) {
-        _mensajeGuia = _pasos[_pasoActual]['guia'] as String?;
-      }
-      _objetivoCumplido = _monto == _montoTexto;
-      _exito = _objetivoCumplido;
     });
   }
 
-  // Tecla que debe brillar: la siguiente correcta, o borrar si se equivoco
-  Set<String> _teclasResaltadas() {
-    if (_objetivoCumplido) return {};
-    if (!_montoTexto.startsWith(_monto)) return {'⌫'};
-    if (_monto.length < _montoTexto.length) return {_montoTexto[_monto.length]};
-    return {};
-  }
+  // Valor que marco el usuario
+  int get _valor => _monto.isEmpty ? 0 : int.parse(_monto);
 
   Set<String> get _resaltados {
     if (_objetivoCumplido) return {};
@@ -303,7 +298,6 @@ class _TutorialNequiMeterPlataScreenState extends State<TutorialNequiMeterPlataS
   // Vuelve al paso anterior sin guardar nada
   void _retroceder() {
     if (_pasoActual == 0) return;
-    FocusManager.instance.primaryFocus?.unfocus(); // esconde el teclado si estaba abierto
     setState(() {
       _pasoActual--;
       _prepararPaso();
@@ -393,7 +387,7 @@ class _TutorialNequiMeterPlataScreenState extends State<TutorialNequiMeterPlataS
                     const MensajeExito(),
                   ],
                   const SizedBox(height: 12),
-                                    Row(
+                  Row(
                     children: [
                       if (_pasoActual > 0) ...[
                         BotonPasoAnterior(onTap: _retroceder),
@@ -463,7 +457,10 @@ class _TutorialNequiMeterPlataScreenState extends State<TutorialNequiMeterPlataS
           child: NequiMovimientos(
             resaltados: const {},
             onAccion: (_) {},
-            movimientos: [_movimientoNuevo, ...movimientosPractica],
+            movimientos: [
+              NequiMovimiento('Metiste plata en Tienda Don Pedro', _valor, 'Hoy', Icons.storefront_rounded),
+              ...movimientosPractica,
+            ],
           ),
         );
       default:
@@ -471,11 +468,14 @@ class _TutorialNequiMeterPlataScreenState extends State<TutorialNequiMeterPlataS
         return MarcoCelular(
           child: NequiInicio(
             nombre: _nombre,
-            saldo: saldoPractica + (_plataRecibida ? _montoPractica : 0),
+            saldo: saldoPractica + (_plataRecibida ? _valor : 0),
             saldoVisible: _saldoVisible,
             resaltados: _resaltados,
             onAccion: _tocarEnSimulador,
-            explicacion: _objetivoCumplido ? paso['burbujaFinal'] as String? : null,
+            explicacion: _objetivoCumplido && paso['burbujaFinal'] == true
+                ? 'Antes tenías ${formatoPesos(saldoPractica)}. Metiste ${formatoPesos(_valor)}. '
+                    '¡Ahora tienes ${formatoPesos(saldoPractica + _valor)}!'
+                : null,
           ),
         );
     }
@@ -730,7 +730,7 @@ class _TutorialNequiMeterPlataScreenState extends State<TutorialNequiMeterPlataS
                         children: [
                           const Text('Nequi · ahora',
                               style: TextStyle(fontSize: 11, color: NequiColores.textoSuave)),
-                          Text('Recibiste ${formatoPesos(_montoPractica)}',
+                          Text('Recibiste ${formatoPesos(_valor)}',
                               style: const TextStyle(
                                   fontSize: 14, fontWeight: FontWeight.bold, color: NequiColores.textoOscuro)),
                           const Text('Metiste plata en Tienda Don Pedro',
@@ -828,7 +828,7 @@ class _TutorialNequiMeterPlataScreenState extends State<TutorialNequiMeterPlataS
   }
 
   Widget _cajaMonto() {
-    final valor = _monto.isEmpty ? 0 : int.parse(_monto);
+    final valor = _valor;
     return Column(
       children: [
         Container(
@@ -849,7 +849,32 @@ class _TutorialNequiMeterPlataScreenState extends State<TutorialNequiMeterPlataS
           ),
         ),
         const SizedBox(height: 12),
-        NequiTeclado(resaltados: _teclasResaltadas(), onTecla: _tocarTeclaTienda),
+        NequiTeclado(resaltados: const {}, onTecla: _tocarTeclaTienda),
+        const SizedBox(height: 12),
+        Opacity(
+          opacity: valor > 0 || _objetivoCumplido ? 1 : 0.5,
+          child: NequiPulso(
+            activo: valor > 0 && !_objetivoCumplido,
+            radio: 14,
+            escala: 1.05,
+            child: Material(
+              color: NequiColores.mnvVerde,
+              borderRadius: BorderRadius.circular(14),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(14),
+                onTap: () => _tocarEnSimulador('listo_monto'),
+                child: const SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: Center(
+                    child: Text('Listo',
+                        style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -872,7 +897,7 @@ class _TutorialNequiMeterPlataScreenState extends State<TutorialNequiMeterPlataS
               const SizedBox(height: 10),
               _filaDato('Celular', _formatoTelefono(_telefono)),
               _filaDato('A nombre de', _nombre),
-              _filaDato('Valor', formatoPesos(_montoPractica)),
+              _filaDato('Valor', formatoPesos(_valor)),
             ],
           ),
         ),
@@ -955,7 +980,7 @@ class _TutorialNequiMeterPlataScreenState extends State<TutorialNequiMeterPlataS
             const Text('Recibo',
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: NequiColores.textoOscuro)),
             const SizedBox(height: 4),
-            Text('${formatoPesos(_montoPractica)} para ${_formatoTelefono(_telefono)}',
+            Text('${formatoPesos(_valor)} para ${_formatoTelefono(_telefono)}',
                 style: const TextStyle(fontSize: 13, color: NequiColores.textoOscuro)),
             const SizedBox(height: 6),
             const Text('Guárdalo hasta ver la plata en tu Nequi',

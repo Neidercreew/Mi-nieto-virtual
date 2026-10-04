@@ -1,34 +1,36 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:confetti/confetti.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'services/api_service.dart';
 import 'nequi_simulador.dart';
 
-const String _leccionId = 'nequi_enviar_plata';
+const String _leccionId = 'nequi_pedir_plata';
 
-// Datos de practica: regalo de cumpleanos para Andres, el nieto
-const String _numeroAndres = '3205557788';
-const String _nombreAndres = 'Andrés Gómez';
-// El usuario decide cuanto enviar. Este valor solo se usa si reanuda
-const int _montoPorDefecto = 20000;
-const String _mensajePorDefecto = '¡Feliz cumpleaños, mijo!';
+// Datos de practica: Gloria, la vecina, devuelve lo del mercado
+const String _numeroGloria = '3105551122';
+const String _nombreGloria = 'Gloria Rojas';
+// El usuario decide cuanto pedir. Estos valores solo se usan si reanuda o como tope
+const int _montoPorDefecto = 15000;
+const int _montoMaximo = 500000;
+const String _mensajePorDefecto = 'Lo del mercado';
 
-// Contactos guardados de practica
+// Contactos guardados de practica (los mismos de Enviar plata)
 const List<Map<String, String>> _contactos = [
-  {'id': 'andres', 'nombre': 'Andrés Gómez', 'detalle': 'Tu nieto', 'numero': _numeroAndres},
-  {'id': 'gloria', 'nombre': 'Gloria Rojas', 'detalle': 'Vecina', 'numero': '3105551122'},
+  {'id': 'andres', 'nombre': 'Andrés Gómez', 'detalle': 'Tu nieto', 'numero': '3205557788'},
+  {'id': 'gloria', 'nombre': 'Gloria Rojas', 'detalle': 'Vecina', 'numero': _numeroGloria},
   {'id': 'maria', 'nombre': 'María López', 'detalle': 'Amiga', 'numero': '3005551234'},
 ];
 
-class TutorialNequiEnviarPlataScreen extends StatefulWidget {
+class TutorialNequiPedirPlataScreen extends StatefulWidget {
   final int pasoInicial; // para reanudar
-  const TutorialNequiEnviarPlataScreen({super.key, this.pasoInicial = 0});
+  const TutorialNequiPedirPlataScreen({super.key, this.pasoInicial = 0});
 
   @override
-  State<TutorialNequiEnviarPlataScreen> createState() => _TutorialNequiEnviarPlataScreenState();
+  State<TutorialNequiPedirPlataScreen> createState() => _TutorialNequiPedirPlataScreenState();
 }
 
-class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlataScreen> {
+class _TutorialNequiPedirPlataScreenState extends State<TutorialNequiPedirPlataScreen> {
   int _pasoActual = 0;
   bool _guardando = false;
   String _pantalla = 'inicio'; // en que pantalla esta el simulador
@@ -43,67 +45,64 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
   String _numero = '';
   String _monto = '';
   String? _mensaje;
+  bool _pagado = false; // Gloria ya pago
   bool _verContactos = false; // lista de contactos abierta en el paso del numero
+  bool _mostrarNotificacion = false;
+  Timer? _timerNotificacion;
   final TextEditingController _mensajeController = TextEditingController();
-  bool _enviado = false;
 
   final List<Map<String, dynamic>> _pasos = [
     {
       'tipo': 'intro',
-      'titulo': 'Mandar plata desde tu casa',
-      'instruccion': 'Hoy es el cumpleaños de Andrés, tu nieto. Le vas a mandar un regalo en plata, sin salir de la casa.',
+      'titulo': 'Pedir plata por Nequi',
+      'instruccion': 'Le prestaste plata a Gloria, tu vecina, para el mercado. Ella te dijo: "Mándame la solicitud por Nequi y te pago".',
     },
     {
-      'tipo': 'necesitas',
-      'titulo': 'Solo necesitas una cosa',
-      'instruccion': 'Para mandarle plata a alguien por Nequi, solo necesitas su número de celular.',
+      'tipo': 'como',
+      'titulo': '¿Cómo funciona?',
+      'instruccion': 'Tú le pides la plata, a Gloria le llega un aviso y ella decide pagar. Tu plata no se mueve para nada.',
     },
     {
       'tipo': 'simulador',
       'inicio': 'inicio',
-      'titulo': 'Toca "Envía"',
-      'instruccion': 'Este es tu Nequi. Para mandar plata, toca el botón "Envía" que está brillando.',
-      'objetivo': 'envia',
-      'ayuda': 'Toca "Envía" en el celular',
-      'guia': 'Ese botón es para otra cosa. Busca "Envía", el que está brillando.',
+      'titulo': 'Toca "Pide"',
+      'instruccion': 'Este es tu Nequi. Para pedirle plata a alguien, toca el botón "Pide" que está brillando.',
+      'objetivo': 'pide',
+      'ayuda': 'Toca "Pide" en el celular',
+      'guia': 'Ese botón es para otra cosa. Busca "Pide", el que está brillando.',
     },
     {
       'tipo': 'simulador',
       'inicio': 'numero',
-      'titulo': '¿A quién le envías?',
-      'instruccion': 'Tienes dos caminos: escribir el número de Andrés (320 555 7788) o buscarlo en tus contactos guardados. Elige el que prefieras.',
+      'titulo': '¿A quién le pides?',
+      'instruccion': 'Escribe el número de Gloria (310 555 1122) o búscala en tus contactos guardados. Elige el camino que prefieras.',
       'objetivo': 'numero_listo',
-      'ayuda': 'Escribe el número o busca a Andrés',
+      'ayuda': 'Escribe el número o busca a Gloria',
       'guia': 'Ese número no va. Tranquilo: toca la tecla de borrar y sigue.',
     },
     {
       'tipo': 'simulador',
       'inicio': 'destinatario',
-      'titulo': '¿Sí es Andrés?',
-      'instruccion': 'Nequi te muestra el nombre del dueño de ese número. Léelo con calma. ¿Es tu nieto? Toca "Sí, es él".',
+      'titulo': '¿Sí es Gloria?',
+      'instruccion': 'Nequi te muestra el nombre del dueño de ese número. Léelo con calma. ¿Es tu vecina? Toca "Sí, es ella".',
       'objetivo': 'si_es',
-      'ayuda': 'Toca "Sí, es él"',
-      'guia': 'En la vida real, si el nombre no es el que esperas, tocas "No es" y no envías nada. Aquí sí es Andrés: toca "Sí, es él".',
-    },
-    {
-      'tipo': 'superpoder',
-      'titulo': 'Tu superpoder: revisar el nombre',
-      'instruccion': 'Antes de mandar plata, mira siempre el nombre. Si no es la persona que esperas, NO envíes.',
+      'ayuda': 'Toca "Sí, es ella"',
+      'guia': 'En la vida real, si el nombre no es el que esperas, tocas "No es" y no sigues. Aquí sí es Gloria: toca "Sí, es ella".',
     },
     {
       'tipo': 'simulador',
       'inicio': 'valor',
-      'titulo': '¿Cuánto le envías?',
-      'instruccion': 'Tú decides cuánto mandarle a Andrés de regalo. Escribe el valor con el teclado y toca "Continuar".',
+      'titulo': '¿Cuánto le pides?',
+      'instruccion': 'Tú decides cuánto pedirle a Gloria: lo que le prestaste. Escribe el valor con el teclado y toca "Continuar".',
       'objetivo': 'monto_listo',
       'ayuda': 'Escribe el valor y toca "Continuar"',
-      'guia': 'Primero escribe cuánta plata le quieres mandar.',
+      'guia': 'Primero escribe cuánta plata le quieres pedir.',
     },
     {
       'tipo': 'simulador',
       'inicio': 'mensaje',
-      'titulo': 'Un mensajito de cariño',
-      'instruccion': 'Escríbele unas palabras a Andrés. Toca la cajita blanca, escribe tu mensaje y luego toca "Listo".',
+      'titulo': 'Dile para qué es',
+      'instruccion': 'Un mensajito ayuda a que Gloria recuerde de qué es la plata. Toca la cajita blanca, escribe y luego toca "Listo".',
       'objetivo': 'mensaje_listo',
       'ayuda': 'Escribe tu mensaje y toca "Listo"',
       'guia': 'Primero escribe tu mensaje en la cajita blanca. Si no se te ocurre nada, mira las ideas.',
@@ -111,26 +110,35 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
     {
       'tipo': 'simulador',
       'inicio': 'revisar',
-      'titulo': 'Revisa antes de enviar',
-      'instruccion': 'Mira todo con calma: nombre, número y valor. Si todo está bien, toca "Enviar".',
-      'objetivo': 'enviar',
-      'ayuda': 'Toca "Enviar"',
-      'guia': 'Revisa los datos y toca el botón "Enviar", el que está brillando.',
+      'titulo': 'Revisa antes de pedir',
+      'instruccion': 'Mira todo con calma: nombre, número y valor. Si todo está bien, toca "Pedir".',
+      'objetivo': 'pedir',
+      'ayuda': 'Toca "Pedir"',
+      'guia': 'Revisa los datos y toca el botón "Pedir", el que está brillando.',
     },
     {
       'tipo': 'simulador',
-      'inicio': 'exito',
-      'titulo': '¡Plata enviada!',
-      'instruccion': 'Este es tu comprobante: Andrés ya recibió tu regalo. Toca "Ir al inicio" para ver tu saldo.',
-      'objetivo': 'ir_inicio',
-      'ayuda': 'Toca "Ir al inicio"',
-      'guia': 'Toca el botón "Ir al inicio", abajo en el celular.',
+      'inicio': 'enviada',
+      'titulo': 'Solicitud enviada',
+      'instruccion': 'Listo, a Gloria ya le llegó tu solicitud. Ahora hay que esperar a que ella pague. Toca "Entendido".',
+      'objetivo': 'entendido',
+      'ayuda': 'Toca "Entendido"',
+      'guia': 'Toca el botón "Entendido", abajo en el celular.',
+    },
+    {
+      'tipo': 'simulador',
+      'inicio': 'escritorio',
+      'titulo': '¡Gloria te pagó!',
+      'instruccion': 'Un rato después, tu celular te avisa que Gloria pagó. Toca el aviso de Nequi que aparece arriba.',
+      'objetivo': 'notificacion',
+      'ayuda': 'Toca el aviso de Nequi',
+      'guia': 'Toca mejor el aviso de arriba: te lleva directo a tu plata.',
     },
     {
       'tipo': 'simulador',
       'inicio': 'inicio',
       'titulo': 'Mira tu saldo',
-      'instruccion': 'Tu saldo bajó porque enviaste plata. Ahora toca "Movimientos" para ver el envío.',
+      'instruccion': 'Tu saldo subió porque Gloria te pagó. Ahora toca "Movimientos" para ver el pago.',
       'objetivo': 'movimientos',
       'ayuda': 'Toca "Movimientos"',
       'guia': 'Busca la fila "Movimientos", la que está brillando.',
@@ -140,17 +148,21 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
       'tipo': 'mirar',
       'inicio': 'movimientos',
       'titulo': 'Aquí quedó anotado',
-      'instruccion': 'El primer movimiento es tu regalo para Andrés. Está en rojo con el signo menos porque es plata que salió.',
+      'instruccion': 'El primer movimiento es el pago de Gloria. Está en verde con el signo + porque es plata que entró.',
     },
     {
-      'tipo': 'consejos',
-      'titulo': 'Tres consejos de oro',
-      'instruccion': 'Antes de terminar, guarda estos consejos para cuando lo hagas de verdad.',
+      'tipo': 'simulador',
+      'inicio': 'extrana',
+      'titulo': '¡Cuidado al revés!',
+      'instruccion': 'A ti también te pueden pedir plata. Si te llega una solicitud que no esperabas o de alguien que no conoces, NO la pagues. Toca "Rechazar".',
+      'objetivo': 'rechazar',
+      'ayuda': 'Toca "Rechazar"',
+      'guia': '¡Espera! No conoces a esta persona y no esperabas este cobro. Pagarlo es regalar tu plata. Toca "Rechazar".',
     },
     {
       'tipo': 'celebracion',
       'titulo': '¡Lo lograste!',
-      'instruccion': 'Ya sabes mandar plata por Nequi. Andrés va a estar feliz con su regalo.',
+      'instruccion': 'Ya sabes pedir plata por Nequi y también sabes decir que no a un cobro sospechoso.',
     },
   ];
 
@@ -171,6 +183,7 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
 
   @override
   void dispose() {
+    _timerNotificacion?.cancel();
     _mensajeController.dispose();
     _confettiController.dispose();
     super.dispose();
@@ -189,28 +202,37 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
     _mensajeGuia = null;
     _exito = false;
     _verContactos = false;
+    _timerNotificacion?.cancel();
+    _mostrarNotificacion = false;
 
     // Estado de la historia segun el paso
-    _numero = _pasoActual >= 4 ? _numeroAndres : '';
+    _numero = _pasoActual >= 4 ? _numeroGloria : '';
     // Conserva el valor que escribio; si reanuda, pone uno por defecto
-    if (_pasoActual < 7) {
+    if (_pasoActual < 6) {
       _monto = '';
     } else if (_monto.isEmpty) {
       _monto = '$_montoPorDefecto';
     }
-    // Conserva el mensaje que eligio; si reanuda, pone uno por defecto
-    if (_pasoActual >= 8) {
+    // Conserva el mensaje que escribio; si reanuda, pone uno por defecto
+    if (_pasoActual >= 7) {
       _mensaje ??= _mensajePorDefecto;
     } else {
       _mensaje = null;
     }
-    _enviado = _pasoActual >= 9;
+    _pagado = _pasoActual >= 10;
 
     final tipo = _paso['tipo'];
     if (tipo == 'simulador' || tipo == 'mirar') {
       _pantalla = _paso['inicio'] as String;
     }
     _objetivoCumplido = !_esSimulador;
+
+    // El aviso de pago llega un momento despues
+    if (_pantalla == 'escritorio' && _esSimulador) {
+      _timerNotificacion = Timer(const Duration(milliseconds: 1200), () {
+        if (mounted) setState(() => _mostrarNotificacion = true);
+      });
+    }
   }
 
   // Marca el paso como logrado. La pantalla NO cambia hasta el boton verde
@@ -231,13 +253,13 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
       } else if (objetivo == 'numero_listo' && _verContactos && accion == 'atras') {
         _verContactos = false;
       } else if (objetivo == 'numero_listo' && accion.startsWith('contacto_')) {
-        if (accion == 'contacto_andres') {
-          // Eligio a Andres: el numero queda escrito solo
-          _numero = _numeroAndres;
+        if (accion == 'contacto_gloria') {
+          // Eligio a Gloria: el numero queda escrito solo
+          _numero = _numeroGloria;
           _verContactos = false;
           _lograr();
         } else {
-          _mensajeGuia = 'Ese contacto es de otra persona. Hoy le enviamos a Andrés, tu nieto.';
+          _mensajeGuia = 'Ese contacto es de otra persona. Hoy le pedimos a Gloria, tu vecina.';
         }
       } else if (accion == 'mensaje_listo' && objetivo == 'mensaje_listo') {
         // Solo avanza si escribio algo
@@ -249,6 +271,8 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
           FocusManager.instance.primaryFocus?.unfocus(); // esconde el teclado
           _lograr();
         }
+      } else if (objetivo == 'notificacion' && !_mostrarNotificacion) {
+        _mensajeGuia = 'Espera un momentico, el aviso ya va a llegar.';
       } else if (objetivo == 'monto_listo' && accion == 'continuar_valor') {
         if (_valor == 0) {
           _mensajeGuia = _paso['guia'] as String?;
@@ -273,12 +297,12 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
         var nuevo = _numero;
         if (tecla == '⌫') {
           if (nuevo.isNotEmpty) nuevo = nuevo.substring(0, nuevo.length - 1);
-        } else if (nuevo.length < _numeroAndres.length) {
+        } else if (nuevo.length < _numeroGloria.length) {
           nuevo += tecla;
         }
-        if (!_numeroAndres.startsWith(nuevo)) _mensajeGuia = _paso['guia'] as String?;
+        if (!_numeroGloria.startsWith(nuevo)) _mensajeGuia = _paso['guia'] as String?;
         _numero = nuevo;
-        if (nuevo == _numeroAndres) _lograr();
+        if (nuevo == _numeroGloria) _lograr();
       });
     } else if (objetivo == 'monto_listo') {
       setState(() {
@@ -287,8 +311,8 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
           if (_monto.isNotEmpty) _monto = _monto.substring(0, _monto.length - 1);
         } else if (!(_monto.isEmpty && tecla == '0')) {
           final nuevo = _monto + tecla;
-          if (int.parse(nuevo) > saldoPractica) {
-            _mensajeGuia = 'No te alcanza: tienes \$ 250.000 de práctica. Prueba con menos.';
+          if (int.parse(nuevo) > _montoMaximo) {
+            _mensajeGuia = 'Para esta práctica, pide un valor de hasta \$ 500.000.';
           } else {
             _monto = nuevo;
           }
@@ -344,7 +368,7 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
     if (_paso['tipo'] == 'celebracion') _confettiController.play();
   }
 
-  // Convierte 3205557788 en "320 555 7788", aunque este a medias
+  // Convierte 3105551122 en "310 555 1122", aunque este a medias
   String _formatoTelefono(String t) {
     final b = StringBuffer();
     for (int i = 0; i < t.length; i++) {
@@ -372,7 +396,7 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
         backgroundColor: NequiColores.mnvFondo,
         elevation: 0,
         foregroundColor: NequiColores.textoOscuro,
-        title: const Text('Enviar plata', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text('Pedir plata', style: TextStyle(fontWeight: FontWeight.bold)),
       ),
       body: Stack(
         children: [
@@ -436,12 +460,8 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
     switch (_paso['tipo']) {
       case 'intro':
         return _ilustracionIntro();
-      case 'necesitas':
-        return _ilustracionNecesitas();
-      case 'superpoder':
-        return _ilustracionSuperpoder();
-      case 'consejos':
-        return _ilustracionConsejos();
+      case 'como':
+        return _ilustracionComo();
       case 'celebracion':
         return _ilustracionCelebracion();
       default:
@@ -450,6 +470,7 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
           child: FittedBox(
             fit: BoxFit.scaleDown,
             child: MarcoCelular(
+              barraClara: _pantalla == 'escritorio',
               child: _buildPantalla(),
             ),
           ),
@@ -462,22 +483,21 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
       case 'numero':
         if (_verContactos) return _pantallaContactos();
         return _pantallaTeclado(
-          titulo: 'Envía plata',
-          pregunta: '¿A qué número le envías?',
+          titulo: 'Pide plata',
+          pregunta: '¿A qué número le pides?',
           valor: _numero.isEmpty ? 'Número de celular' : _formatoTelefono(_numero),
           vacio: _numero.isEmpty,
-          resaltados: _teclasResaltadas(_numeroAndres, _numero),
+          resaltados: _teclasResaltadas(_numeroGloria, _numero),
           extra: _botonContactos(),
         );
       case 'destinatario':
         return _pantallaDestinatario();
       case 'valor':
         return _pantallaTeclado(
-          titulo: 'Envía plata',
-          pregunta: '¿Cuánto le envías a Andrés?',
+          titulo: 'Pide plata',
+          pregunta: '¿Cuánto le pides a Gloria?',
           valor: formatoPesos(_valor),
           vacio: _monto.isEmpty,
-          detalle: 'Disponible: ${formatoPesos(saldoPractica)}',
           resaltados: const {},
           boton: Opacity(
             opacity: _valor > 0 || _objetivoCumplido ? 1 : 0.5,
@@ -488,30 +508,34 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
         return _pantallaMensaje();
       case 'revisar':
         return _pantallaRevisar();
-      case 'exito':
-        return _pantallaExito();
+      case 'enviada':
+        return _pantallaEnviada();
+      case 'escritorio':
+        return _pantallaEscritorio();
+      case 'extrana':
+        return _pantallaSolicitudExtrana();
       case 'movimientos':
         return NequiMovimientos(
           resaltados: const {},
           onAccion: (_) {},
           movimientos: [
-            NequiMovimiento('Le enviaste a Andrés', -_valor, 'Hoy', Icons.send_rounded),
+            NequiMovimiento('Gloria Rojas te pagó', _valor, 'Hoy', Icons.call_received_rounded),
             ...movimientosPractica,
           ],
         );
       default:
         return NequiInicio(
           nombre: _nombre,
-          saldo: saldoPractica - (_enviado ? _valor : 0),
+          saldo: saldoPractica + (_pagado ? _valor : 0),
           saldoVisible: true,
-          resaltados: _resalta('envia')
-              ? {'envia'}
+          resaltados: _resalta('pide')
+              ? {'pide'}
               : _resalta('movimientos')
                   ? {'movimientos'}
                   : <String>{},
           explicacion: _paso['burbuja'] == true
-              ? 'Tenías ${formatoPesos(saldoPractica)}. Enviaste ${formatoPesos(_valor)}. '
-                  'Ahora tienes ${formatoPesos(saldoPractica - _valor)}.'
+              ? 'Tenías ${formatoPesos(saldoPractica)}. Gloria te pagó ${formatoPesos(_valor)}. '
+                  'Ahora tienes ${formatoPesos(saldoPractica + _valor)}.'
               : null,
           onAccion: _tocarEnSimulador,
         );
@@ -556,7 +580,6 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
     required String valor,
     required bool vacio,
     required Set<String> resaltados,
-    String? detalle,
     Widget? extra,
     Widget? boton,
   }) {
@@ -588,10 +611,6 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
               ),
             ),
           ),
-          if (detalle != null) ...[
-            const SizedBox(height: 6),
-            Text(detalle, style: const TextStyle(fontSize: 12, color: NequiColores.textoSuave)),
-          ],
           if (extra != null) ...[
             const SizedBox(height: 10),
             extra,
@@ -649,7 +668,7 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
           _encabezado('Mis contactos'),
           const Padding(
             padding: EdgeInsets.fromLTRB(18, 4, 18, 12),
-            child: Text('Toca a la persona a la que le quieres enviar',
+            child: Text('Toca a la persona a la que le quieres pedir',
                 style: TextStyle(fontSize: 13, color: NequiColores.textoSuave)),
           ),
           for (final c in _contactos)
@@ -663,10 +682,10 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
   }
 
   Widget _filaContacto(Map<String, String> c) {
-    final esAndres = c['id'] == 'andres';
+    final esGloria = c['id'] == 'gloria';
     final nombre = c['nombre']!;
     return NequiPulso(
-      activo: esAndres && _resalta('numero_listo'),
+      activo: esGloria && _resalta('numero_listo'),
       radio: 16,
       escala: 1.04,
       child: Material(
@@ -713,26 +732,26 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
       color: NequiColores.fondoApp,
       child: Column(
         children: [
-          _encabezado('Envía plata'),
+          _encabezado('Pide plata'),
           const Spacer(),
           const CircleAvatar(
             radius: 40,
             backgroundColor: NequiColores.rosaSuave,
-            child: Text('A',
+            child: Text('G',
                 style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold, color: NequiColores.magenta)),
           ),
           const SizedBox(height: 14),
-          const Text('Le vas a enviar a:', style: TextStyle(fontSize: 13, color: NequiColores.textoSuave)),
+          const Text('Le vas a pedir a:', style: TextStyle(fontSize: 13, color: NequiColores.textoSuave)),
           const SizedBox(height: 4),
-          const Text(_nombreAndres,
+          const Text(_nombreGloria,
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: NequiColores.textoOscuro)),
           const SizedBox(height: 4),
-          Text(_formatoTelefono(_numeroAndres),
+          Text(_formatoTelefono(_numeroGloria),
               style: const TextStyle(fontSize: 15, color: NequiColores.textoSuave)),
           const SizedBox(height: 18),
           const Padding(
             padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Text('¿Es la persona a la que le quieres enviar?',
+            child: Text('¿Es la persona a la que le quieres pedir?',
                 textAlign: TextAlign.center,
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: NequiColores.textoOscuro)),
           ),
@@ -741,20 +760,9 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
             padding: const EdgeInsets.fromLTRB(14, 0, 14, 24),
             child: Row(
               children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => _tocarEnSimulador('no_es'),
-                    style: OutlinedButton.styleFrom(
-                      minimumSize: const Size(0, 48),
-                      side: const BorderSide(color: NequiColores.textoSuave),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    ),
-                    child: const Text('No es',
-                        style: TextStyle(color: NequiColores.textoSuave, fontSize: 15, fontWeight: FontWeight.bold)),
-                  ),
-                ),
+                Expanded(child: _botonGris('no_es', 'No es')),
                 const SizedBox(width: 10),
-                Expanded(child: _botonMagenta('si_es', 'Sí, es él')),
+                Expanded(child: _botonMagenta('si_es', 'Sí, es ella')),
               ],
             ),
           ),
@@ -770,10 +778,10 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _encabezado('Envía plata'),
+          _encabezado('Pide plata'),
           const Padding(
             padding: EdgeInsets.fromLTRB(18, 6, 18, 10),
-            child: Text('Escribe un mensaje para Andrés',
+            child: Text('Escribe un mensaje para Gloria',
                 style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: NequiColores.textoOscuro)),
           ),
           // Cajita donde escribe el usuario
@@ -830,9 +838,9 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
                   Text('💡 Ideas para escribir:',
                       style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: NequiColores.magenta)),
                   SizedBox(height: 6),
-                  Text('• ¡Feliz cumpleaños, mijo!', style: TextStyle(fontSize: 13, color: NequiColores.textoOscuro)),
-                  Text('• Con mucho cariño', style: TextStyle(fontSize: 13, color: NequiColores.textoOscuro)),
-                  Text('• Para un detallito', style: TextStyle(fontSize: 13, color: NequiColores.textoOscuro)),
+                  Text('• Lo del mercado', style: TextStyle(fontSize: 13, color: NequiColores.textoOscuro)),
+                  Text('• Gracias, vecina', style: TextStyle(fontSize: 13, color: NequiColores.textoOscuro)),
+                  Text('• Lo que te presté', style: TextStyle(fontSize: 13, color: NequiColores.textoOscuro)),
                 ],
               ),
             ),
@@ -855,7 +863,7 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
       color: NequiColores.fondoApp,
       child: Column(
         children: [
-          _encabezado('Revisa tu envío'),
+          _encabezado('Revisa tu solicitud'),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 14),
             child: Container(
@@ -871,8 +879,8 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
                       style: const TextStyle(
                           fontSize: 30, fontWeight: FontWeight.bold, color: NequiColores.magenta)),
                   const SizedBox(height: 12),
-                  _filaDato('Para', _nombreAndres),
-                  _filaDato('Celular', _formatoTelefono(_numeroAndres)),
+                  _filaDato('Le pides a', _nombreGloria),
+                  _filaDato('Celular', _formatoTelefono(_numeroGloria)),
                   _filaDato('Mensaje', _mensaje ?? 'Sin mensaje'),
                 ],
               ),
@@ -881,7 +889,7 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
           const Spacer(),
           Padding(
             padding: const EdgeInsets.fromLTRB(14, 0, 14, 24),
-            child: _botonMagenta('enviar', 'Enviar'),
+            child: _botonMagenta('pedir', 'Pedir'),
           ),
         ],
       ),
@@ -907,7 +915,8 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
     );
   }
 
-  Widget _pantallaExito() {
+  // Comprobante: la solicitud quedo esperando a Gloria
+  Widget _pantallaEnviada() {
     return Container(
       color: Colors.white,
       child: Column(
@@ -921,35 +930,188 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
             child: Container(
               width: 96,
               height: 96,
-              decoration: const BoxDecoration(color: NequiColores.mnvVerde, shape: BoxShape.circle),
-              child: const Icon(Icons.check_rounded, color: Colors.white, size: 60),
+              decoration: const BoxDecoration(color: NequiColores.mnvAmarillo, shape: BoxShape.circle),
+              child: const Icon(Icons.hourglass_top_rounded, color: Colors.white, size: 54),
             ),
           ),
           const SizedBox(height: 18),
-          const Text('¡Plata enviada!',
+          const Text('¡Solicitud enviada!',
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: NequiColores.textoOscuro)),
           const SizedBox(height: 8),
           Text(formatoPesos(_valor),
               style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: NequiColores.magenta)),
           const SizedBox(height: 4),
-          const Text('para $_nombreAndres',
-              style: TextStyle(fontSize: 15, color: NequiColores.textoSuave)),
-          if (_mensaje != null) ...[
-            const SizedBox(height: 14),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              decoration: BoxDecoration(
-                color: NequiColores.rosaSuave,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(_mensaje!,
-                  style: const TextStyle(fontSize: 13, color: NequiColores.textoOscuro)),
+          const Text('a $_nombreGloria', style: TextStyle(fontSize: 15, color: NequiColores.textoSuave)),
+          const SizedBox(height: 14),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+            decoration: BoxDecoration(
+              color: NequiColores.mnvAmarillo.withOpacity(0.15),
+              borderRadius: BorderRadius.circular(20),
             ),
-          ],
+            child: const Text('⏳ Esperando a que Gloria pague',
+                style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: NequiColores.textoConsejo)),
+          ),
+          const SizedBox(height: 12),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 24),
+            child: Text('Tu plata no se ha movido. Te avisaremos cuando ella pague.',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 13, color: NequiColores.textoSuave, height: 1.35)),
+          ),
           const Spacer(),
           Padding(
             padding: const EdgeInsets.fromLTRB(14, 0, 14, 24),
-            child: _botonMagenta('ir_inicio', 'Ir al inicio'),
+            child: _botonMagenta('entendido', 'Entendido'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _pantallaEscritorio() {
+    final resaltar = _mostrarNotificacion && !_objetivoCumplido;
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: NequiEscritorio(
+            resaltados: const {},
+            onAccion: (_) => _tocarEnSimulador('app'),
+          ),
+        ),
+        // Aviso de Nequi que baja desde arriba
+        AnimatedPositioned(
+          duration: const Duration(milliseconds: 450),
+          curve: Curves.easeOutBack,
+          top: _mostrarNotificacion || _objetivoCumplido ? 34 : -120,
+          left: 10,
+          right: 10,
+          child: NequiPulso(
+            activo: resaltar,
+            radio: 18,
+            escala: 1.05,
+            child: GestureDetector(
+              onTap: () => _tocarEnSimulador('notificacion'),
+              child: Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(18),
+                  boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.2), blurRadius: 12)],
+                ),
+                child: Row(
+                  children: [
+                    const NequiLogo(tam: 36),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Nequi · ahora',
+                              style: TextStyle(fontSize: 11, color: NequiColores.textoSuave)),
+                          Text('Gloria te pagó ${formatoPesos(_valor)}',
+                              style: const TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.bold, color: NequiColores.textoOscuro)),
+                          Text('Pagó tu solicitud: ${_mensaje ?? _mensajePorDefecto}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: 11, color: NequiColores.textoSuave)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  // Practica: una solicitud de cobro sospechosa
+  Widget _pantallaSolicitudExtrana() {
+    return Container(
+      color: NequiColores.fondoApp,
+      child: Column(
+        children: [
+          _encabezado('Te pidieron plata'),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 14),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(18),
+              ),
+              child: Column(
+                children: [
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundColor: NequiColores.mnvRojo.withOpacity(0.12),
+                    child: const Text('?',
+                        style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: NequiColores.mnvRojo)),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text('Número desconocido',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: NequiColores.textoOscuro)),
+                  const Text('300 555 9876', style: TextStyle(fontSize: 13, color: NequiColores.textoSuave)),
+                  const SizedBox(height: 10),
+                  const Text('te pide', style: TextStyle(fontSize: 13, color: NequiColores.textoSuave)),
+                  Text(formatoPesos(200000),
+                      style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: NequiColores.magenta)),
+                  const SizedBox(height: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: NequiColores.mnvFondo,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Text('"Paga para reclamar tu premio 🎁"',
+                        style: TextStyle(fontSize: 13, color: NequiColores.textoOscuro)),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Text('¿Conoces a esta persona? ¿Esperabas este cobro?',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600, color: NequiColores.textoOscuro)),
+          ),
+          const Spacer(),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(14, 0, 14, 24),
+            child: _objetivoCumplido
+                ? Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: NequiColores.mnvVerde.withOpacity(0.12),
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: const Row(
+                      children: [
+                        Icon(Icons.shield_rounded, color: NequiColores.mnvVerde),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Text('Solicitud rechazada. Tu plata está a salvo.',
+                              style: TextStyle(
+                                  fontSize: 13, fontWeight: FontWeight.bold, color: NequiColores.mnvVerde)),
+                        ),
+                      ],
+                    ),
+                  )
+                : Row(
+                    children: [
+                      Expanded(child: _botonGris('pagar', 'Pagar')),
+                      const SizedBox(width: 10),
+                      Expanded(child: _botonMagenta('rechazar', 'Rechazar')),
+                    ],
+                  ),
           ),
         ],
       ),
@@ -981,6 +1143,20 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
     );
   }
 
+  // Boton gris de borde, para la opcion que no es
+  Widget _botonGris(String id, String texto) {
+    return OutlinedButton(
+      onPressed: () => _tocarEnSimulador(id),
+      style: OutlinedButton.styleFrom(
+        minimumSize: const Size(0, 48),
+        side: const BorderSide(color: NequiColores.textoSuave),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      ),
+      child: Text(texto,
+          style: const TextStyle(color: NequiColores.textoSuave, fontSize: 15, fontWeight: FontWeight.bold)),
+    );
+  }
+
   // ------------------------------------------------------------
   // ILUSTRACIONES DE LOS PASOS SIN SIMULADOR
   // ------------------------------------------------------------
@@ -993,16 +1169,16 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('💌', style: TextStyle(fontSize: 60)),
-              SizedBox(width: 12),
-              Icon(Icons.arrow_forward_rounded, size: 40, color: NequiColores.mnvMorado),
-              SizedBox(width: 12),
-              Text('👦🏽🎂', style: TextStyle(fontSize: 56)),
+              Text('👵🏽', style: TextStyle(fontSize: 60)),
+              SizedBox(width: 10),
+              Text('🛒', style: TextStyle(fontSize: 50)),
+              SizedBox(width: 10),
+              Text('🏠', style: TextStyle(fontSize: 56)),
             ],
           ),
           SizedBox(height: 28),
           ConsejoCalido(
-            texto: 'Mandar plata por Nequi es como entregar un sobre con un regalo, pero sin salir de la casa.',
+            texto: 'Pedir plata por Nequi es como pasar una cuenta de cobro, pero con amabilidad y sin tener que ir a tocar la puerta.',
           ),
           SizedBox(height: 12),
           ConsejoCalido(
@@ -1013,59 +1189,59 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
     );
   }
 
-  Widget _ilustracionNecesitas() {
+  Widget _ilustracionComo() {
     return SingleChildScrollView(
       child: Column(
         children: [
-          const SizedBox(height: 10),
-          _tarjetaInfo('📱', 'Su número de celular',
-              'El mismo número con el que lo llamas. Con eso Nequi sabe a quién le llega la plata.',
-              NequiColores.mnvMorado),
-          const SizedBox(height: 16),
+          _pasoComo('1', '📩', 'Tú le pides', 'Le mandas una solicitud a Gloria por la plata que le prestaste.'),
+          _flechaAbajo(),
+          _pasoComo('2', '🔔', 'A ella le llega un aviso', 'Gloria ve tu solicitud en su celular.'),
+          _flechaAbajo(),
+          _pasoComo('3', '✅', 'Ella decide pagar', 'Cuando paga, la plata llega a tu Nequi.'),
+          const SizedBox(height: 14),
           const ConsejoCalido(
-            texto: 'Si tienes el número anotado en un papel o en tus contactos, mejor: así no te equivocas.',
+            texto: 'Pedir no mueve tu plata. Solo le envías un recordatorio amable a la otra persona.',
           ),
         ],
       ),
     );
   }
 
-  Widget _ilustracionSuperpoder() {
-    return SingleChildScrollView(
-      child: Column(
+  Widget _pasoComo(String numero, String emoji, String titulo, String texto) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: NequiColores.borde, width: 1.5),
+      ),
+      child: Row(
         children: [
-          _tarjetaInfo('✅', 'Sale el nombre que esperas',
-              'Escribiste el número de Andrés y sale "Andrés Gómez". Puedes enviar tranquilo.',
-              NequiColores.mnvVerde),
-          const SizedBox(height: 12),
-          _tarjetaInfo('🛑', 'Sale un nombre que no conoces',
-              'NO envíes. Revisa el número, o llama a la persona para confirmar.',
-              NequiColores.mnvRojo),
-          const SizedBox(height: 16),
-          const ConsejoCalido(
-            texto: 'Revisar el nombre te protege de errores y de personas que quieren engañarte.',
+          Text(emoji, style: const TextStyle(fontSize: 30)),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('$numero. $titulo',
+                    style: const TextStyle(
+                        fontSize: 15, fontWeight: FontWeight.bold, color: NequiColores.mnvMorado)),
+                const SizedBox(height: 2),
+                Text(texto,
+                    style: const TextStyle(fontSize: 13, color: NequiColores.textoOscuro, height: 1.3)),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  Widget _ilustracionConsejos() {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          _tarjetaInfo('👀', 'Revisa siempre el nombre',
-              'Antes de enviar, confirma que es la persona correcta.', NequiColores.mnvVerde),
-          const SizedBox(height: 12),
-          _tarjetaInfo('⏳', 'Enviar no tiene deshacer',
-              'Si mandas plata a otra persona, recuperarla es muy difícil. Por eso, calma y revisa.',
-              NequiColores.mnvAmarillo),
-          const SizedBox(height: 12),
-          _tarjetaInfo('🚫', 'Nadie de Nequi te pide plata',
-              'Si alguien te llama pidiendo que le envíes plata o tu clave, cuelga y pregunta a alguien de confianza.',
-              NequiColores.mnvRojo),
-        ],
-      ),
+  Widget _flechaAbajo() {
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: 4),
+      child: Icon(Icons.arrow_downward_rounded, color: NequiColores.mnvMoradoSec, size: 24),
     );
   }
 
@@ -1076,44 +1252,14 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
           const SizedBox(height: 16),
           const Text('🎉', style: TextStyle(fontSize: 80)),
           const SizedBox(height: 12),
-          const Text('¡Ya sabes mandar plata por Nequi!',
+          const Text('¡Ya sabes pedir plata por Nequi!',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: NequiColores.textoOscuro)),
           const SizedBox(height: 20),
-          _logro('Encontraste el número de Andrés'),
-          _logro('Revisaste el nombre antes de enviar'),
-          _logro('Decidiste cuánto enviar y escribiste tu mensaje'),
-          _logro('Viste el comprobante y tu nuevo saldo'),
-        ],
-      ),
-    );
-  }
-
-  Widget _tarjetaInfo(String emoji, String titulo, String texto, Color color) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: color.withOpacity(0.4), width: 1.5),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(emoji, style: const TextStyle(fontSize: 34)),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(titulo, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: color)),
-                const SizedBox(height: 4),
-                Text(texto,
-                    style: const TextStyle(fontSize: 14, color: NequiColores.textoOscuro, height: 1.35)),
-              ],
-            ),
-          ),
+          _logro('Le pediste a Gloria el valor que tú decidiste'),
+          _logro('Revisaste el nombre antes de pedir'),
+          _logro('Recibiste el pago y lo viste en tus movimientos'),
+          _logro('Rechazaste un cobro sospechoso'),
         ],
       ),
     );
