@@ -92,7 +92,7 @@ class _TutorialWhatsappSeguroScreenState
       'titulo': '💡 El código de 6 números',
       'instruccion':
           'Si alguien te pide "el código que te llegó por mensaje", NO se lo des. Con ese código te roban tu WhatsApp.\n\nNi WhatsApp, ni el banco, ni tu familia te lo van a pedir nunca.',
-      'icono': Icons.pin_rounded,
+      'icono': Icons.lock_rounded,
       'colorIcono': MnvColores.rojo,
     },
     {
@@ -100,7 +100,7 @@ class _TutorialWhatsappSeguroScreenState
       'titulo': 'Una palabra clave familiar 🔑',
       'instruccion':
           'Acuerda con tu familia una palabra secreta (por ejemplo, el nombre de una mascota vieja).\n\nSi alguien te pide plata "de urgencia", pídele la palabra. El estafador no la sabe.',
-      'icono': Icons.key_rounded,
+      'icono': Icons.vpn_key_rounded,
       'colorIcono': MnvColores.verde,
     },
     {
