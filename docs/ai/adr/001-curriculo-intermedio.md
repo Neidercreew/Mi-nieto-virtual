@@ -6,7 +6,7 @@
 El grid ya tenía cuatro tarjetas intermedias (WhatsApp, Gmail, Mensajes, Calendario) sin contenido. El prompt pide un currículo real, sin relleno y sin cuatro copias del mismo simulador.
 
 ## Decisión
-- WhatsApp 5 · Correo 4 · Mensajes 3 · Calendario 4 = **16 lecciones, 160 pasos** (detalle en `docs/nivel-intermedio-curriculo.md`).
+- WhatsApp 5 · Correo 4 · Mensajes 3 · Calendario 4 = **16 lecciones, 157 pasos** (detalle en `docs/nivel-intermedio-curriculo.md`).
 - Cada módulo con su propia forma de interacción y su color de acento tomado de la paleta MNV.
 - La seguridad (anti-estafas) se reparte: una lección completa en WhatsApp y prácticas dentro de Correo y Mensajes.
 - Mensajes no repite `escribir_mensaje` del básico: se enfoca en lo que solo pasa por SMS (códigos, sin internet, links falsos).

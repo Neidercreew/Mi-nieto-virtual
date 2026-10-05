@@ -4,7 +4,7 @@
 > **Intermedio:** "sé usar las apps que usa mi familia y resolver tareas de la vida diaria sin pedir ayuda".
 
 **Fecha:** 4 de octubre de 2026 · **Rama:** `ai/nivel-intermedio-v1`
-**16 lecciones · 4 módulos · 160 pasos**
+**16 lecciones · 4 módulos · 157 pasos**
 
 ## Principios del nivel
 
