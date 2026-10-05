@@ -649,12 +649,16 @@ class MnvPantallaInicio extends StatelessWidget {
   final List<MnvAppInicio> apps;
   final String? resaltada;
   final ValueChanged<String> onApp;
+  final String hora;
+  final String fecha;
 
   const MnvPantallaInicio({
     super.key,
     required this.apps,
     required this.resaltada,
     required this.onApp,
+    this.hora = '9:41',
+    this.fecha = 'martes, 6 de octubre',
   });
 
   static const List<MnvAppInicio> appsBase = [
@@ -687,12 +691,12 @@ class MnvPantallaInicio extends StatelessWidget {
       child: Column(
         children: [
           const SizedBox(height: 22),
-          const Text('9:41',
-              style: TextStyle(
+          Text(hora,
+              style: const TextStyle(
                   color: Colors.white,
                   fontSize: 40,
                   fontWeight: FontWeight.w300)),
-          Text('martes, 6 de octubre',
+          Text(fecha,
               style: TextStyle(
                   color: Colors.white.withValues(alpha: 0.8), fontSize: 12)),
           const Spacer(),

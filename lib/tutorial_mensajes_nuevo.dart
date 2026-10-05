@@ -432,7 +432,7 @@ class _TutorialMensajesNuevoScreenState
           const Icon(Icons.signal_cellular_alt_rounded,
               size: 13, color: MnvColores.texto),
           const SizedBox(width: 4),
-          const Icon(Icons.battery_5_bar_rounded,
+          const Icon(Icons.battery_full_rounded,
               size: 13, color: MnvColores.texto),
         ],
       ),
