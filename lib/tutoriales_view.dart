@@ -31,6 +31,7 @@ import 'tutorial_nequi_enviar_plata.dart';
 import 'tutorial_nequi_pedir_plata.dart';
 import 'tutorial_nequi_pagar_qr.dart';
 import 'tutorial_nequi_sacar_plata.dart';
+import 'tutorial_nequi_anti_estafas.dart';
 
 class TutorialApp {
   final String nombre;
@@ -363,7 +364,8 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
           leccionId: 'nequi_anti_estafas',
           titulo: 'Nequi seguro',
           emoji: '🛡️',
-          builder: () => const ProximamenteScreen(titulo: 'Nequi seguro'),
+          builder: () => const TutorialNequiAntiEstafasScreen(),
+          builderDesde: (paso) => TutorialNequiAntiEstafasScreen(pasoInicial: paso),
         ),
       ],
     ),
@@ -636,6 +638,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
           {'id': 'nequi_pedir_plata', 'titulo': 'Pedir plata', 'emoji': '🙋', 'pasos': 14},
           {'id': 'nequi_pagar_qr', 'titulo': 'Pagar con QR', 'emoji': '📷', 'pasos': 13},
           {'id': 'nequi_sacar_plata', 'titulo': 'Sacar plata', 'emoji': '🏧', 'pasos': 18},
+                    {'id': 'nequi_anti_estafas', 'titulo': 'Nequi seguro', 'emoji': '🛡️', 'pasos': 15},
         ],
       },
     ];
