@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'services/api_service.dart';
 import 'seleccion_nivel.dart';
 import 'detalle_tutorial.dart';
 import 'tutorial_botones.dart';
 import 'mapa_lecciones.dart';
-import 'proximamente_screen.dart';
 import 'tutorial_pantalla_tactil.dart';
 import 'tutorial_moviendote.dart';
 import 'tutorial_configuraciones.dart';
@@ -76,7 +74,6 @@ class TutorialesScreen extends StatefulWidget {
 
 class _TutorialesScreenState extends State<TutorialesScreen> {
   String _nivelUsuario = 'basico';
-  int _navIndex = 0;
   int _tabSeleccionado = 0;
 
   late Future<Map<String, dynamic>?> _progresoFuture;
@@ -1136,14 +1133,6 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _navIcon(IconData icon, int index) {
-    final selected = _navIndex == index;
-    return GestureDetector(
-      onTap: () => setState(() => _navIndex = index),
-      child: Icon(icon, size: 26, color: selected ? const Color(0xFF6B4EFF) : const Color(0xFFBBBBCC)),
     );
   }
 
