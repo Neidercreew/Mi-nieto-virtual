@@ -103,6 +103,8 @@ class _TutorialBotonesScreenState extends State<TutorialBotonesScreen> {
     super.dispose();
   }
 
+  bool _terminando = false;
+
   Future<void> _vibrarYAvanzar() async {
     if (_mostrarFelicitacion) return;
 
@@ -200,6 +202,9 @@ class _TutorialBotonesScreenState extends State<TutorialBotonesScreen> {
                   child: GestureDetector(
                     onTap: () async {
                       if (esUltimoPaso) {
+                        // Evita doble toque al terminar (cerraria tambien el mapa)
+                        if (_terminando) return;
+                        _terminando = true;
                          // Marca la lección como completada en el backend
                         final prefs = await SharedPreferences.getInstance();
                         final userId = prefs.getString('usuario_id');

@@ -191,7 +191,12 @@ double _panelAltura = 0;
   }
 
   // ── Guarda completada:true al terminar toda la lección ──
+  // Evita doble toque al terminar (cerraria tambien el mapa)
+  bool _terminando = false;
+
   Future<void> _terminarLeccion() async {
+    if (_terminando) return;
+    _terminando = true;
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getString('usuario_id');
     if (userId != null) {

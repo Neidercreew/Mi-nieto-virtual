@@ -141,6 +141,12 @@ class _TutorialMensajesNuevoScreenState
     _pasoActual = widget.pasoInicial.clamp(0, _pasos.length - 1);
     _confetti = ConfettiController(duration: const Duration(seconds: 5));
     _prepararPaso();
+    // Si se retoma justo en la celebracion, tambien hay confeti
+    if (_pasos[_pasoActual]['tipo'] == 'celebracion') {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) _confetti.play();
+      });
+    }
   }
 
   @override
@@ -334,7 +340,23 @@ class _TutorialMensajesNuevoScreenState
     }));
   }
 
+  // Evita que un doble toque en el boton salte un paso o cierre dos pantallas
+  bool _avanzando = false;
+
   Future<void> _avanzar() async {
+    if (_avanzando) return;
+    _avanzando = true;
+    try {
+      await _avanzarPaso();
+    } finally {
+      // Si la leccion ya se cerro el boton queda bloqueado
+      if (mounted && (ModalRoute.of(context)?.isCurrent ?? true)) {
+        _avanzando = false;
+      }
+    }
+  }
+
+  Future<void> _avanzarPaso() async {
     if (!_objetivoCumplido) return;
     _cancelarTimers();
     final esUltimo = _pasoActual == _pasos.length - 1;

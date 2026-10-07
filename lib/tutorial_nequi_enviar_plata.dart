@@ -320,7 +320,23 @@ class _TutorialNequiEnviarPlataScreenState extends State<TutorialNequiEnviarPlat
     });
   }
 
+  // Evita que un doble toque en el boton salte un paso o cierre dos pantallas
+  bool _avanzando = false;
+
   Future<void> _avanzar() async {
+    if (_avanzando) return;
+    _avanzando = true;
+    try {
+      await _avanzarPaso();
+    } finally {
+      // Si la leccion ya se cerro el boton queda bloqueado
+      if (mounted && (ModalRoute.of(context)?.isCurrent ?? true)) {
+        _avanzando = false;
+      }
+    }
+  }
+
+  Future<void> _avanzarPaso() async {
     if (!_objetivoCumplido || _guardando) return;
     _guardando = true;
     final prefs = await SharedPreferences.getInstance();
