@@ -103,11 +103,12 @@ class _MapaLeccionesScreenState extends State<MapaLeccionesScreen> {
 
   if (userId != null) {
     final progreso = await ApiService.obtenerProgreso(userId);
-    final lista = progreso?['progreso'] as List<dynamic>? ?? [];
-    final item = lista.firstWhere(
-      (p) => p['leccionId'] == leccion.leccionId,
-      orElse: () => null,
-    );
+        // Lista de progreso del usuario, vacia si no hay nada
+    final lista = (progreso?['progreso'] as List?) ?? [];
+    // Busca la leccion; si no esta, item queda en null
+    final item = lista
+        .where((p) => p['leccionId'] == leccion.leccionId)
+        .firstOrNull;
     pasoGuardado = item?['paso'] ?? -1;
   }
 
