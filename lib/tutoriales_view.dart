@@ -22,8 +22,10 @@ import 'tutorial_grabar_video.dart';
 import 'tutorial_galeria.dart';
 import 'tutorial_borrar_fotos.dart';
 import 'tutorial_hacer_llamada.dart';
+import 'tutorial_nequi_conociendo.dart';
 import 'tutorial_guardar_contacto.dart';
 import 'tutorial_devolver_llamada.dart';
+import 'tutorial_nequi_meter_plata.dart';
 import 'tutorial_contestar_llamada.dart';
 import 'tutorial_whatsapp_conociendo.dart';
 import 'tutorial_whatsapp_responder.dart';
@@ -41,6 +43,11 @@ import 'tutorial_calendario_conociendo.dart';
 import 'tutorial_calendario_crear_evento.dart';
 import 'tutorial_calendario_recordatorios.dart';
 import 'tutorial_calendario_editar.dart';
+import 'tutorial_nequi_enviar_plata.dart';
+import 'tutorial_nequi_pedir_plata.dart';
+import 'tutorial_nequi_pagar_qr.dart';
+import 'tutorial_nequi_sacar_plata.dart';
+import 'tutorial_nequi_anti_estafas.dart';
 
 class TutorialApp {
   final String nombre;
@@ -462,11 +469,68 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
       )),
     ),
     TutorialApp(
-      nombre: 'Nequi',
-      imagenAsset: 'assets/icons/nequi.png',
-      fondo: const Color(0xFFFFFFFF),
-      nivel: 'avanzado',
+  nombre: 'Nequi',
+  imagenAsset: 'assets/icons/nequi.png',
+  fondo: const Color(0xFFFFFFFF),
+  nivel: 'avanzado',
+  icono: Icons.account_balance_wallet_rounded,
+  onTap: () => Navigator.push(context, MaterialPageRoute(
+    builder: (_) => MapaLeccionesScreen(
+      moduloTitulo: 'Nequi',
+      lecciones: [
+        LeccionMapa(
+          leccionId: 'nequi_conociendo',
+          titulo: 'Conociendo Nequi',
+          emoji: '💜',
+          builder: () => const TutorialNequiConociendoScreen(),
+          builderDesde: (paso) => TutorialNequiConociendoScreen(pasoInicial: paso),
+        ),
+        LeccionMapa(
+        leccionId: 'nequi_meter_plata',
+        titulo: 'Meter plata a Nequi',
+        emoji: '💵',
+        builder: () => const TutorialNequiMeterPlataScreen(),
+        builderDesde: (paso) => TutorialNequiMeterPlataScreen(pasoInicial: paso),
+),
+        LeccionMapa(
+          leccionId: 'nequi_enviar_plata',
+          titulo: 'Enviar plata',
+          emoji: '💸',
+          builder: () => const TutorialNequiEnviarPlataScreen(),
+          builderDesde: (paso) => TutorialNequiEnviarPlataScreen(pasoInicial: paso),
+        ),
+        LeccionMapa(
+          leccionId: 'nequi_pedir_plata',
+          titulo: 'Pedir plata',
+          emoji: '🙋',
+          builder: () => const TutorialNequiPedirPlataScreen(),
+          builderDesde: (paso) => TutorialNequiPedirPlataScreen(pasoInicial: paso),
+        ),
+        LeccionMapa(
+          leccionId: 'nequi_pagar_qr',
+          titulo: 'Pagar con QR',
+          emoji: '📷',
+          builder: () => const TutorialNequiPagarQrScreen(),
+          builderDesde: (paso) => TutorialNequiPagarQrScreen(pasoInicial: paso),
+        ),
+        LeccionMapa(
+          leccionId: 'nequi_sacar_plata',
+          titulo: 'Sacar plata',
+          emoji: '🏧',
+          builder: () => const TutorialNequiSacarPlataScreen(),
+          builderDesde: (paso) => TutorialNequiSacarPlataScreen(pasoInicial: paso),
+        ),
+        LeccionMapa(
+          leccionId: 'nequi_anti_estafas',
+          titulo: 'Nequi seguro',
+          emoji: '🛡️',
+          builder: () => const TutorialNequiAntiEstafasScreen(),
+          builderDesde: (paso) => TutorialNequiAntiEstafasScreen(pasoInicial: paso),
+        ),
+      ],
     ),
+  )),
+),
   ];
 
   List<TutorialApp> get _appsFiltradas {
@@ -723,6 +787,19 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
           {'id': 'telefono_guardar_contactos', 'titulo': 'Guardar un contacto', 'emoji': '👤', 'pasos': 13},
           {'id': 'devolver_llamada', 'titulo': 'Devolver una llamada', 'emoji': '↩️', 'pasos': 12},
           {'id': 'contestar_llamada', 'titulo': 'Contestar una llamada', 'emoji': '📲', 'pasos': 13},
+        ],
+       },
+      {
+        'titulo': '💜 Nequi',
+        'nivel': 'avanzado',
+        'lecciones': [
+          {'id': 'nequi_conociendo', 'titulo': 'Conociendo Nequi', 'emoji': '💜', 'pasos': 12},
+          {'id': 'nequi_meter_plata', 'titulo': 'Meter plata a Nequi', 'emoji': '💵', 'pasos': 13},
+          {'id': 'nequi_enviar_plata', 'titulo': 'Enviar plata', 'emoji': '💸', 'pasos': 14},
+          {'id': 'nequi_pedir_plata', 'titulo': 'Pedir plata', 'emoji': '🙋', 'pasos': 14},
+          {'id': 'nequi_pagar_qr', 'titulo': 'Pagar con QR', 'emoji': '📷', 'pasos': 13},
+          {'id': 'nequi_sacar_plata', 'titulo': 'Sacar plata', 'emoji': '🏧', 'pasos': 18},
+                    {'id': 'nequi_anti_estafas', 'titulo': 'Nequi seguro', 'emoji': '🛡️', 'pasos': 15},
         ],
       },
       {
