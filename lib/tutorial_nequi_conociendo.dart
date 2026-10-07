@@ -638,7 +638,7 @@ class _TutorialNequiConociendoScreenState extends State<TutorialNequiConociendoS
         borderRadius: BorderRadius.circular(30),
         border: Border.all(color: NequiColores.mnvVerde.withOpacity(0.4), width: 1.5),
       ),
-      child: Row(
+      child: FittedBox(fit: BoxFit.scaleDown, child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           const Icon(Icons.check_circle_rounded, color: NequiColores.mnvVerde, size: 18),
@@ -647,7 +647,7 @@ class _TutorialNequiConociendoScreenState extends State<TutorialNequiConociendoS
               style: const TextStyle(
                   fontSize: 13, fontWeight: FontWeight.w600, color: NequiColores.textoOscuro)),
         ],
-      ),
+      )),
     );
   }
 }

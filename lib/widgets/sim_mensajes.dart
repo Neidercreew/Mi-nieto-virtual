@@ -109,12 +109,11 @@ class MsCabeceraLista extends StatelessWidget {
                     Icon(Icons.close_rounded, color: MnvColores.texto, size: 22),
               ),
             ),
-            Text('$seleccionados seleccionado${seleccionados == 1 ? '' : 's'}',
+            Expanded(child: Text('$seleccionados seleccionado${seleccionados == 1 ? '' : 's'}',
                 style: const TextStyle(
                     color: MnvColores.texto,
                     fontSize: 15,
-                    fontWeight: FontWeight.bold)),
-            const Spacer(),
+                    fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis)),
             GestureDetector(
               onTap: onBorrar,
               child: MnvResalte(
@@ -556,7 +555,7 @@ class MsBotonIniciarChat extends StatelessWidget {
                   offset: const Offset(0, 4))
             ],
           ),
-          child: const Row(
+          child: const FittedBox(fit: BoxFit.scaleDown, child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(Icons.chat_outlined, color: Colors.white, size: 19),
@@ -567,7 +566,7 @@ class MsBotonIniciarChat extends StatelessWidget {
                       fontSize: 13,
                       fontWeight: FontWeight.bold)),
             ],
-          ),
+          )),
         ),
       ),
     );

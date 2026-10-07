@@ -558,9 +558,9 @@ class _TutorialNequiSacarPlataScreenState extends State<TutorialNequiSacarPlataS
             ),
           ),
           const SizedBox(width: 10),
-          Text(titulo,
+          Flexible(child: Text(titulo,
               style: const TextStyle(
-                  fontSize: 18, fontWeight: FontWeight.bold, color: NequiColores.textoOscuro)),
+                  fontSize: 18, fontWeight: FontWeight.bold, color: NequiColores.textoOscuro), maxLines: 1, overflow: TextOverflow.ellipsis)),
         ],
       ),
     );
@@ -712,8 +712,8 @@ class _TutorialNequiSacarPlataScreenState extends State<TutorialNequiSacarPlataS
                     children: [
                       Icon(Icons.local_atm_rounded, color: NequiColores.textoSuave, size: 18),
                       SizedBox(width: 6),
-                      Text('En un cajero, sin tarjeta',
-                          style: TextStyle(fontSize: 13, color: NequiColores.textoSuave)),
+                      Flexible(child: Text('En un cajero, sin tarjeta',
+                          style: TextStyle(fontSize: 13, color: NequiColores.textoSuave), maxLines: 1, overflow: TextOverflow.ellipsis)),
                     ],
                   ),
                 ],
@@ -785,8 +785,8 @@ class _TutorialNequiSacarPlataScreenState extends State<TutorialNequiSacarPlataS
             children: [
               Icon(Icons.timer_outlined, color: NequiColores.textoSuave, size: 18),
               SizedBox(width: 6),
-              Text('Úsalo pronto: vence en un rato',
-                  style: TextStyle(fontSize: 13, color: NequiColores.textoSuave)),
+              Flexible(child: Text('Úsalo pronto: vence en un rato',
+                  style: TextStyle(fontSize: 13, color: NequiColores.textoSuave), maxLines: 1, overflow: TextOverflow.ellipsis)),
             ],
           ),
           const SizedBox(height: 12),
@@ -864,8 +864,8 @@ class _TutorialNequiSacarPlataScreenState extends State<TutorialNequiSacarPlataS
             children: [
               Icon(Icons.local_atm_rounded, color: Colors.white70, size: 20),
               SizedBox(width: 6),
-              Text('CAJERO AUTOMÁTICO',
-                  style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1)),
+              Flexible(child: Text('CAJERO AUTOMÁTICO',
+                  style: TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold, letterSpacing: 1), maxLines: 1, overflow: TextOverflow.ellipsis)),
             ],
           ),
           const SizedBox(height: 10),

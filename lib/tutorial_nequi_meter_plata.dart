@@ -520,9 +520,9 @@ class _TutorialNequiMeterPlataScreenState extends State<TutorialNequiMeterPlataS
             ),
           ),
           const SizedBox(width: 10),
-          Text(titulo,
+          Flexible(child: Text(titulo,
               style: const TextStyle(
-                  fontSize: 18, fontWeight: FontWeight.bold, color: NequiColores.textoOscuro)),
+                  fontSize: 18, fontWeight: FontWeight.bold, color: NequiColores.textoOscuro), maxLines: 1, overflow: TextOverflow.ellipsis)),
         ],
       ),
     );
@@ -966,8 +966,7 @@ class _TutorialNequiMeterPlataScreenState extends State<TutorialNequiMeterPlataS
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         children: [
-          Text(etiqueta, style: const TextStyle(fontSize: 13, color: NequiColores.textoSuave)),
-          const Spacer(),
+          Expanded(child: Text(etiqueta, style: const TextStyle(fontSize: 13, color: NequiColores.textoSuave), maxLines: 1, overflow: TextOverflow.ellipsis)),
           Text(valor,
               style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: NequiColores.textoOscuro)),
         ],

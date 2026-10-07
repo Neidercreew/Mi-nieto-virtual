@@ -463,11 +463,11 @@ class _TutorialMensajesCodigosScreenState
                 Icon(Icons.local_hospital_rounded,
                     color: Colors.white, size: 20),
                 SizedBox(width: 8),
-                Text('Mi EPS',
+                Flexible(child: Text('Mi EPS',
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 16,
-                        fontWeight: FontWeight.bold)),
+                        fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis)),
               ],
             ),
           ),
@@ -557,8 +557,8 @@ class _TutorialMensajesCodigosScreenState
             children: [
               const Icon(Icons.sms_rounded, color: MsColores.acento, size: 17),
               const SizedBox(width: 6),
-              const Text('Código de Mensajes: ',
-                  style: TextStyle(color: MnvColores.suave, fontSize: 11.5)),
+              Flexible(child: const Text('Código de Mensajes: ',
+                  style: TextStyle(color: MnvColores.suave, fontSize: 11.5), maxLines: 1, overflow: TextOverflow.ellipsis)),
               Text(_codigo2,
                   style: const TextStyle(
                       color: MnvColores.texto,

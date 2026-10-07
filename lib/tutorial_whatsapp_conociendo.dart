@@ -652,9 +652,9 @@ class _TutorialWhatsappConociendoScreenState
                     children: [
                       Icon(flecha, size: 13, color: colorFlecha),
                       const SizedBox(width: 3),
-                      Text(cuando,
+                      Flexible(child: Text(cuando,
                           style: const TextStyle(
-                              color: MnvColores.suave2, fontSize: 11)),
+                              color: MnvColores.suave2, fontSize: 11), maxLines: 1, overflow: TextOverflow.ellipsis)),
                     ],
                   ),
                 ],

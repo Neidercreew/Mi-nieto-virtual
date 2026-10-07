@@ -643,8 +643,8 @@ class _TutorialWhatsappAudiosScreenState
                         color: MnvColores.suave, size: 26),
                   ),
                 ),
-                const Text('Ya puedes soltar el dedo',
-                    style: TextStyle(color: MnvColores.suave2, fontSize: 11)),
+                Flexible(child: const Text('Ya puedes soltar el dedo',
+                    style: TextStyle(color: MnvColores.suave2, fontSize: 11), maxLines: 1, overflow: TextOverflow.ellipsis)),
                 WaBotonRedondo(
                   icono: Icons.send_rounded,
                   resaltado: _pasoActual == 4,
@@ -675,14 +675,27 @@ class _TutorialWhatsappAudiosScreenState
                   color: MnvColores.texto,
                   fontSize: 14,
                   fontWeight: FontWeight.bold)),
-          const Spacer(),
-          Icon(Icons.chevron_left_rounded,
-              color: cerca ? MnvColores.rojo : MnvColores.suave2, size: 18),
-          Text(cerca ? 'Suelta para borrar' : 'Desliza para cancelar',
-              style: TextStyle(
-                  color: cerca ? MnvColores.rojo : MnvColores.suave2,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600)),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Icon(Icons.chevron_left_rounded,
+                    color: cerca ? MnvColores.rojo : MnvColores.suave2,
+                    size: 18),
+                Flexible(
+                  child: Text(
+                      cerca ? 'Suelta para borrar' : 'Desliza para cancelar',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                          color: cerca ? MnvColores.rojo : MnvColores.suave2,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600)),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -800,7 +813,7 @@ class _TutorialWhatsappAudiosScreenState
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(color: MnvColores.rojo, width: 1.5),
               ),
-              child: const Row(
+              child: const FittedBox(fit: BoxFit.scaleDown, child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Icon(Icons.delete_rounded, color: MnvColores.rojo, size: 22),
@@ -811,7 +824,7 @@ class _TutorialWhatsappAudiosScreenState
                           fontSize: 12,
                           fontWeight: FontWeight.bold)),
                 ],
-              ),
+              )),
             ),
           ),
         ),

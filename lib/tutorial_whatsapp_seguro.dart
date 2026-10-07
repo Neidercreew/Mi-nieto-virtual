@@ -876,7 +876,7 @@ class _TutorialWhatsappSeguroScreenState
                               color: const Color(0xFFF1F0F5),
                               borderRadius: BorderRadius.circular(8),
                             ),
-                            child: const Row(
+                            child: const FittedBox(fit: BoxFit.scaleDown, child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Icon(Icons.fast_forward_rounded,
@@ -888,7 +888,7 @@ class _TutorialWhatsappSeguroScreenState
                                         fontSize: 10.5,
                                         fontStyle: FontStyle.italic)),
                               ],
-                            ),
+                            )),
                           ),
                         ),
                       ),

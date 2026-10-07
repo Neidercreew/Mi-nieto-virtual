@@ -548,7 +548,7 @@ class _TutorialCorreoResponderScreenState
                   color: CoColores.barra,
                   borderRadius: BorderRadius.circular(14),
                 ),
-                child: const Row(
+                child: const FittedBox(fit: BoxFit.scaleDown, child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     MnvAvatar(texto: 'C', color: MnvColores.azul, tam: 18),
@@ -557,7 +557,7 @@ class _TutorialCorreoResponderScreenState
                         style: TextStyle(
                             color: MnvColores.texto, fontSize: 11.5)),
                   ],
-                ),
+                )),
               ),
             ),
           ),

@@ -76,12 +76,15 @@ class CaCabeceraMes extends StatelessWidget {
       child: Row(
         children: [
           const SizedBox(width: 8),
-          Text('${nombre[0].toUpperCase()}${nombre.substring(1)} $anio',
-              style: const TextStyle(
-                  color: MnvColores.texto,
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold)),
-          const Spacer(),
+          Expanded(
+            child: Text('${nombre[0].toUpperCase()}${nombre.substring(1)} $anio',
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                    color: MnvColores.texto,
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold)),
+          ),
           _flecha(Icons.chevron_left_rounded, resaltarAnterior, onAnterior),
           _flecha(Icons.chevron_right_rounded, resaltarSiguiente, onSiguiente),
         ],
@@ -284,11 +287,11 @@ class CaPestanasVista extends StatelessWidget {
                     size: 15,
                     color: sel ? CaColores.acento : MnvColores.suave2),
                 const SizedBox(width: 5),
-                Text(texto,
+                Flexible(child: Text(texto,
                     style: TextStyle(
                         color: sel ? MnvColores.texto : MnvColores.suave2,
                         fontSize: 12,
-                        fontWeight: sel ? FontWeight.bold : FontWeight.w500)),
+                        fontWeight: sel ? FontWeight.bold : FontWeight.w500), maxLines: 1, overflow: TextOverflow.ellipsis)),
               ],
             ),
           ),

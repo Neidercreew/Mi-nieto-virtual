@@ -581,9 +581,9 @@ class _TutorialNequiPedirPlataScreenState extends State<TutorialNequiPedirPlataS
             ),
           ),
           const SizedBox(width: 10),
-          Text(titulo,
+          Flexible(child: Text(titulo,
               style: const TextStyle(
-                  fontSize: 18, fontWeight: FontWeight.bold, color: NequiColores.textoOscuro)),
+                  fontSize: 18, fontWeight: FontWeight.bold, color: NequiColores.textoOscuro), maxLines: 1, overflow: TextOverflow.ellipsis)),
         ],
       ),
     );
@@ -664,8 +664,8 @@ class _TutorialNequiPedirPlataScreenState extends State<TutorialNequiPedirPlataS
                 children: [
                   Icon(Icons.contacts_rounded, color: NequiColores.magenta, size: 20),
                   SizedBox(width: 8),
-                  Text('Buscar en mis contactos',
-                      style: TextStyle(color: NequiColores.magenta, fontSize: 14, fontWeight: FontWeight.bold)),
+                  Flexible(child: Text('Buscar en mis contactos',
+                      style: TextStyle(color: NequiColores.magenta, fontSize: 14, fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis)),
                 ],
               ),
             ),

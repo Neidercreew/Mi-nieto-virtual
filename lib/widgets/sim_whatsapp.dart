@@ -214,7 +214,9 @@ class WaPestanas extends StatelessWidget {
             radio: 14,
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-              child: Column(
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   AnimatedContainer(
@@ -239,6 +241,7 @@ class WaPestanas extends StatelessWidget {
                           fontWeight:
                               activo ? FontWeight.bold : FontWeight.w500)),
                 ],
+                ),
               ),
             ),
           ),
@@ -687,8 +690,8 @@ class WaPanelEmojis extends StatelessWidget {
               children: [
                 Icon(Icons.keyboard_rounded, size: 16, color: MnvColores.suave),
                 SizedBox(width: 4),
-                Text('Volver al teclado',
-                    style: TextStyle(color: MnvColores.suave, fontSize: 11)),
+                Flexible(child: Text('Volver al teclado',
+                    style: TextStyle(color: MnvColores.suave, fontSize: 11), maxLines: 1, overflow: TextOverflow.ellipsis)),
               ],
             ),
           ),

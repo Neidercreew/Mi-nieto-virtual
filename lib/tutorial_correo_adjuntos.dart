@@ -586,11 +586,11 @@ class _TutorialCorreoAdjuntosScreenState
                                 Icon(Icons.biotech_rounded,
                                     color: MnvColores.verde, size: 18),
                                 SizedBox(width: 4),
-                                Text('LABORATORIO VIDA',
+                                Flexible(child: Text('LABORATORIO VIDA',
                                     style: TextStyle(
                                         color: MnvColores.verde,
                                         fontSize: 11,
-                                        fontWeight: FontWeight.w800)),
+                                        fontWeight: FontWeight.w800), maxLines: 1, overflow: TextOverflow.ellipsis)),
                               ],
                             ),
                             const SizedBox(height: 6),

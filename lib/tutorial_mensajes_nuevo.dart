@@ -557,11 +557,11 @@ class _TutorialMensajesNuevoScreenState
               children: [
                 const Text('Para: ',
                     style: TextStyle(color: MnvColores.suave, fontSize: 13)),
-                Text(_busqueda,
+                Flexible(child: Text(_busqueda,
                     style: const TextStyle(
                         color: MnvColores.texto,
                         fontSize: 13,
-                        fontWeight: FontWeight.bold)),
+                        fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis)),
                 Container(width: 2, height: 16, color: MsColores.acento),
               ],
             ),
@@ -588,11 +588,11 @@ class _TutorialMensajesNuevoScreenState
                               color: esMaria ? MnvColores.verde : MsColores.acento,
                               tam: 32),
                           const SizedBox(width: 10),
-                          Text(c[0],
+                          Flexible(child: Text(c[0],
                               style: const TextStyle(
                                   color: MnvColores.texto,
                                   fontSize: 13.5,
-                                  fontWeight: FontWeight.w600)),
+                                  fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis)),
                         ],
                       ),
                     ),

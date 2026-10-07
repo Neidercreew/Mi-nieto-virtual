@@ -549,15 +549,17 @@ class _TutorialNequiAntiEstafasScreenState extends State<TutorialNequiAntiEstafa
                   fontSize: 13,
                   fontWeight: colgada ? FontWeight.bold : FontWeight.normal)),
           const SizedBox(height: 18),
-          // Lo que dice el estafador
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: _globoVoz(
-              'Buenas, le hablo del área de seguridad de Nequi. Su cuenta va a ser bloqueada hoy. '
-              'Para evitarlo, dígame el código de 6 números que le acaba de llegar por mensaje.',
+          // Lo que dice el estafador. Si no cabe (pantalla pequena o letra
+          // grande) se puede desplazar y los botones quedan siempre abajo.
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: _globoVoz(
+                'Buenas, le hablo del área de seguridad de Nequi. Su cuenta va a ser bloqueada hoy. '
+                'Para evitarlo, dígame el código de 6 números que le acaba de llegar por mensaje.',
+              ),
             ),
           ),
-          const Spacer(),
           if (colgada)
             const Padding(
               padding: EdgeInsets.only(bottom: 40),
@@ -599,18 +601,20 @@ class _TutorialNequiAntiEstafasScreenState extends State<TutorialNequiAntiEstafa
           const SizedBox(height: 4),
           const Text('En llamada  00:41', style: TextStyle(color: Colors.white70, fontSize: 13)),
           const SizedBox(height: 18),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: _globoVoz(
-              '¡Hola! No, yo no he cambiado de número y estoy muy bien. '
-              'Ese mensaje no es mío, es de un estafador. ¡Qué bueno que me llamaste!',
-              color: NequiColores.mnvVerde,
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: _globoVoz(
+                '¡Hola! No, yo no he cambiado de número y estoy muy bien. '
+                'Ese mensaje no es mío, es de un estafador. ¡Qué bueno que me llamaste!',
+                color: NequiColores.mnvVerde,
+              ),
             ),
           ),
-          const Spacer(),
           const Padding(
-            padding: EdgeInsets.only(bottom: 36),
+            padding: EdgeInsets.fromLTRB(12, 8, 12, 36),
             child: Text('💚 Tu familia está bien y tu plata también',
+                textAlign: TextAlign.center,
                 style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
           ),
         ],

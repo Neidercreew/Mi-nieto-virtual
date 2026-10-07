@@ -727,11 +727,11 @@ class _TutorialMensajesOrganizarScreenState
                           children: [
                             Icon(icono, color: color, size: 21),
                             const SizedBox(width: 12),
-                            Text(texto,
+                            Flexible(child: Text(texto,
                                 style: TextStyle(
                                     color: color,
                                     fontSize: 13,
-                                    fontWeight: FontWeight.w600)),
+                                    fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis)),
                           ],
                         ),
                       ),

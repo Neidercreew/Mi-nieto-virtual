@@ -672,11 +672,11 @@ class _TutorialWhatsappFotosScreenState
                       color: MnvColores.texto, size: 22),
                   onPressed: () => _tocarEnSimulador('cerrar_galeria'),
                 ),
-                const Text('Galería',
+                Flexible(child: const Text('Galería',
                     style: TextStyle(
                         color: MnvColores.texto,
                         fontSize: 16,
-                        fontWeight: FontWeight.bold)),
+                        fontWeight: FontWeight.bold), maxLines: 1, overflow: TextOverflow.ellipsis)),
               ],
             ),
           ),

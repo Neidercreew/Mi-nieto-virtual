@@ -687,7 +687,7 @@ class _TutorialCorreoRedactarScreenState
             color: CoColores.barra,
             borderRadius: BorderRadius.circular(14),
           ),
-          child: const Row(
+          child: const FittedBox(fit: BoxFit.scaleDown, child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               MnvAvatar(texto: 'L', color: MnvColores.verde, tam: 18),
@@ -695,7 +695,7 @@ class _TutorialCorreoRedactarScreenState
               Text('Lucía (nieta)',
                   style: TextStyle(color: MnvColores.texto, fontSize: 12)),
             ],
-          ),
+          )),
         ),
       ),
     );

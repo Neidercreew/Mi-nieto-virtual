@@ -152,7 +152,7 @@ class CoFilaCorreo extends StatelessWidget {
         radio: 12,
         escala: 1.03,
         child: Container(
-          height: 62,
+          constraints: const BoxConstraints(minHeight: 62),
           color: resaltada ? MnvColores.amarilloSuave : CoColores.fondo,
           padding: const EdgeInsets.fromLTRB(10, 6, 4, 6),
           child: Row(
@@ -271,7 +271,7 @@ class CoBotonRedactar extends StatelessWidget {
                   offset: const Offset(0, 4))
             ],
           ),
-          child: const Row(
+          child: const FittedBox(fit: BoxFit.scaleDown, child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Icon(Icons.edit_outlined, color: MnvColores.texto, size: 20),
@@ -282,7 +282,7 @@ class CoBotonRedactar extends StatelessWidget {
                       fontSize: 13,
                       fontWeight: FontWeight.bold)),
             ],
-          ),
+          )),
         ),
       ),
     );
@@ -520,13 +520,13 @@ class CoMenuLateral extends StatelessWidget {
                             children: [
                               Icon(icono, size: 20, color: MnvColores.texto),
                               const SizedBox(width: 12),
-                              Text(nombre,
+                              Flexible(child: Text(nombre,
                                   style: TextStyle(
                                       color: MnvColores.texto,
                                       fontSize: 13,
                                       fontWeight: esActiva
                                           ? FontWeight.bold
-                                          : FontWeight.w500)),
+                                          : FontWeight.w500), maxLines: 1, overflow: TextOverflow.ellipsis)),
                             ],
                           ),
                         ),
@@ -877,11 +877,11 @@ class CoBotonesResponder extends StatelessWidget {
         children: [
           Icon(icono, size: 18, color: MnvColores.texto),
           const SizedBox(width: 6),
-          Text(texto,
+          Flexible(child: Text(texto,
               style: const TextStyle(
                   color: MnvColores.texto,
                   fontSize: 12.5,
-                  fontWeight: FontWeight.w600)),
+                  fontWeight: FontWeight.w600), maxLines: 1, overflow: TextOverflow.ellipsis)),
         ],
       ),
     );

@@ -446,9 +446,9 @@ class _TutorialNequiPagarQrScreenState extends State<TutorialNequiPagarQrScreen>
             ),
           ),
           const SizedBox(width: 10),
-          Text(titulo,
+          Flexible(child: Text(titulo,
               style: const TextStyle(
-                  fontSize: 18, fontWeight: FontWeight.bold, color: NequiColores.textoOscuro)),
+                  fontSize: 18, fontWeight: FontWeight.bold, color: NequiColores.textoOscuro), maxLines: 1, overflow: TextOverflow.ellipsis)),
         ],
       ),
     );
@@ -512,7 +512,7 @@ class _TutorialNequiPagarQrScreenState extends State<TutorialNequiPagarQrScreen>
                       color: NequiColores.mnvVerde,
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    child: const Row(
+                    child: const FittedBox(fit: BoxFit.scaleDown, child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(Icons.check_rounded, color: Colors.white, size: 18),
@@ -520,7 +520,7 @@ class _TutorialNequiPagarQrScreenState extends State<TutorialNequiPagarQrScreen>
                         Text('¡QR leído!',
                             style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold)),
                       ],
-                    ),
+                    )),
                   ),
               ],
             ),

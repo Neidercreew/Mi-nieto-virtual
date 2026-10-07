@@ -713,10 +713,9 @@ class NequiInicio extends StatelessWidget {
               children: [
                 Icon(icono, color: NequiColores.magenta, size: 22),
                 const SizedBox(width: 12),
-                Text(texto,
+                Expanded(child: Text(texto,
                     style: const TextStyle(
-                        fontSize: 14, fontWeight: FontWeight.bold, color: NequiColores.textoOscuro)),
-                const Spacer(),
+                        fontSize: 14, fontWeight: FontWeight.bold, color: NequiColores.textoOscuro), maxLines: 1, overflow: TextOverflow.ellipsis)),
                 const Icon(Icons.chevron_right_rounded, color: NequiColores.textoSuave),
               ],
             ),
@@ -809,9 +808,9 @@ class NequiMovimientos extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 10),
-                const Text('Movimientos',
+                Flexible(child: const Text('Movimientos',
                     style: TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold, color: NequiColores.textoOscuro)),
+                        fontSize: 18, fontWeight: FontWeight.bold, color: NequiColores.textoOscuro), maxLines: 1, overflow: TextOverflow.ellipsis)),
               ],
             ),
           ),
