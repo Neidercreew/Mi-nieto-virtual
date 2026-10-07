@@ -147,7 +147,7 @@ class ApiService {
 
     if (remoto == null) {
       if (local.isEmpty) return null;
-      return {'progreso': local.values.toList(), 'sinConexion': true};
+            return {'progreso': <dynamic>[...local.values], 'sinConexion': true};
     }
 
     // Mezcla: lo del servidor manda, pero una leccion completada en el
@@ -174,7 +174,7 @@ class ApiService {
 
     await _enCola(() => _escribirCopiaLocal(usuarioId, mezcla));
     final resultado = Map<String, dynamic>.from(remoto);
-    resultado['progreso'] = mezcla.values.toList();
+    resultado['progreso'] = <dynamic>[...mezcla.values];
     return resultado;
   }
 
