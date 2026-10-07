@@ -28,6 +28,8 @@ import 'package:mi_nieto_virtual/tutorial_calendario_crear_evento.dart';
 import 'package:mi_nieto_virtual/tutorial_calendario_recordatorios.dart';
 import 'package:mi_nieto_virtual/tutorial_calendario_editar.dart';
 
+import 'revisar_pasos.dart';
+
 class _Leccion {
   final String id;
   final int pasos;
@@ -70,14 +72,6 @@ final List<_Leccion> _lecciones = [
       (p) => TutorialCalendarioEditarScreen(pasoInicial: p)),
 ];
 
-// Celular de 360 x 780 puntos
-void _tamanoCelular(WidgetTester tester) {
-  tester.view.physicalSize = const Size(1080, 2340);
-  tester.view.devicePixelRatio = 3.0;
-  addTearDown(tester.view.resetPhysicalSize);
-  addTearDown(tester.view.resetDevicePixelRatio);
-}
-
 Future<void> _abrir(WidgetTester tester, Widget leccion) async {
   await tester.pumpWidget(MaterialApp(key: UniqueKey(), home: leccion));
   // No usar pumpAndSettle: el pulso amarillo se repite sin fin
@@ -96,21 +90,15 @@ void main() {
   group('Cada leccion se puede retomar en cualquier paso', () {
     for (final l in _lecciones) {
       testWidgets('${l.id}: ${l.pasos} pasos sin errores', (tester) async {
-        _tamanoCelular(tester);
-        for (int paso = 0; paso < l.pasos; paso++) {
-          await _abrir(tester, l.desde(paso));
-          expect(tester.takeException(), isNull,
-              reason: '${l.id} fallo en el paso ${paso + 1}');
-          expect(find.text('Paso ${paso + 1} de ${l.pasos}'), findsOneWidget);
-        }
-        await _cerrar(tester);
+        await revisarTodosLosPasos(tester,
+            id: l.id, pasos: l.pasos, desde: l.desde);
       });
     }
   });
 
   group('Recorridos con toques', () {
     testWidgets('WhatsApp: abrir la app pone el boton verde', (tester) async {
-      _tamanoCelular(tester);
+      tamanoCelular(tester);
       await _abrir(tester, const TutorialWhatsappConociendoScreen(pasoInicial: 1));
       expect(find.text('Toca el cuadro verde de WhatsApp'), findsOneWidget);
 
@@ -130,7 +118,7 @@ void main() {
     });
 
     testWidgets('WhatsApp: escribir hola con el teclado', (tester) async {
-      _tamanoCelular(tester);
+      tamanoCelular(tester);
       await _abrir(tester, const TutorialWhatsappResponderScreen(pasoInicial: 3));
       for (final letra in ['h', 'o', 'l', 'a']) {
         await tester.ensureVisible(find.text(letra).last);
@@ -143,7 +131,7 @@ void main() {
     });
 
     testWidgets('Correo: abrir el de la clinica', (tester) async {
-      _tamanoCelular(tester);
+      tamanoCelular(tester);
       await _abrir(tester, const TutorialCorreoBandejaScreen(pasoInicial: 3));
       await tester.ensureVisible(find.text('Tienda Mundo Ofertas'));
       await tester.tap(find.text('Tienda Mundo Ofertas'));
@@ -157,7 +145,7 @@ void main() {
     });
 
     testWidgets('Mensajes: escribir el codigo 482913', (tester) async {
-      _tamanoCelular(tester);
+      tamanoCelular(tester);
       await _abrir(tester, const TutorialMensajesCodigosScreen(pasoInicial: 3));
       for (final n in ['4', '8', '2', '9', '1', '3']) {
         await tester.ensureVisible(find.text(n).last);
@@ -172,7 +160,7 @@ void main() {
     });
 
     testWidgets('Calendario: tocar el jueves 8', (tester) async {
-      _tamanoCelular(tester);
+      tamanoCelular(tester);
       await _abrir(
           tester, const TutorialCalendarioConociendoScreen(pasoInicial: 3));
       await tester.ensureVisible(find.text('9'));
@@ -188,7 +176,7 @@ void main() {
     });
 
     testWidgets('Avanzar guarda el paso y cambia de pantalla', (tester) async {
-      _tamanoCelular(tester);
+      tamanoCelular(tester);
       await _abrir(tester, const TutorialCalendarioEditarScreen());
       expect(find.text('Paso 1 de 10'), findsOneWidget);
       await tester.tap(find.text('Entendido, siguiente →'));

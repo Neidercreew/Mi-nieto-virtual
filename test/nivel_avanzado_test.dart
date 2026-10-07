@@ -3,7 +3,8 @@
 //
 // Cada leccion se abre en CADA paso (como al retomar desde el paso
 // guardado) en una pantalla de celular de 360x780, sin errores ni
-// desbordes (RenderFlex overflowed).
+// desbordes (RenderFlex overflowed). Si algo falla, la prueba lista
+// todos los pasos con problema y el archivo:linea de cada uno.
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,6 +17,8 @@ import 'package:mi_nieto_virtual/tutorial_nequi_pedir_plata.dart';
 import 'package:mi_nieto_virtual/tutorial_nequi_pagar_qr.dart';
 import 'package:mi_nieto_virtual/tutorial_nequi_sacar_plata.dart';
 import 'package:mi_nieto_virtual/tutorial_nequi_anti_estafas.dart';
+
+import 'revisar_pasos.dart';
 
 class _Leccion {
   final String id;
@@ -41,30 +44,14 @@ final List<_Leccion> _lecciones = [
       (p) => TutorialNequiAntiEstafasScreen(pasoInicial: p)),
 ];
 
-void _tamanoCelular(WidgetTester tester) {
-  tester.view.physicalSize = const Size(1080, 2340);
-  tester.view.devicePixelRatio = 3.0;
-  addTearDown(tester.view.resetPhysicalSize);
-  addTearDown(tester.view.resetDevicePixelRatio);
-}
-
 void main() {
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
   group('Nequi: cada leccion se puede retomar en cualquier paso', () {
     for (final l in _lecciones) {
       testWidgets('${l.id}: ${l.pasos} pasos sin errores', (tester) async {
-        _tamanoCelular(tester);
-        for (int paso = 0; paso < l.pasos; paso++) {
-          await tester.pumpWidget(
-              MaterialApp(key: UniqueKey(), home: l.desde(paso)));
-          await tester.pump(const Duration(milliseconds: 600));
-          expect(tester.takeException(), isNull,
-              reason: '${l.id} fallo en el paso ${paso + 1}');
-          expect(find.text('Paso ${paso + 1} de ${l.pasos}'), findsOneWidget);
-        }
-        await tester.pumpWidget(const SizedBox());
-        await tester.pump(const Duration(seconds: 6));
+        await revisarTodosLosPasos(tester,
+            id: l.id, pasos: l.pasos, desde: l.desde);
       });
     }
   });
