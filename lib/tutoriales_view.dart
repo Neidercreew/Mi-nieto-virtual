@@ -753,7 +753,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
           {'id': 'conociendo_tu_celular', 'titulo': 'Botones físicos', 'emoji': '🔘', 'pasos': 7},
           {'id': 'pantalla_tactil', 'titulo': 'La pantalla táctil', 'emoji': '👆', 'pasos': 14},
           {'id': 'moviendote_celular', 'titulo': 'Moviendote en tu celular', 'emoji': '🧭', 'pasos': 10},
-          {'id': 'configuraciones_esenciales', 'titulo': 'Configuraciones esenciales', 'emoji': '⚙️', 'pasos': 36},
+          {'id': 'configuraciones_esenciales', 'titulo': 'Configuraciones esenciales', 'emoji': '⚙️', 'pasos': 34},
           {'id': 'bateria_y_cuidado', 'titulo': 'Batería y cuidado', 'emoji': '🔋', 'pasos': 14},
         ],
       },
@@ -784,7 +784,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
         'nivel': 'basico',
         'lecciones': [
           {'id': 'telefono_hacer_llamada', 'titulo': 'Hacer una llamada', 'emoji': '📞', 'pasos': 12},
-          {'id': 'telefono_guardar_contactos', 'titulo': 'Guardar un contacto', 'emoji': '👤', 'pasos': 13},
+          {'id': 'telefono_guardar_contacto', 'titulo': 'Guardar un contacto', 'emoji': '👤', 'pasos': 13},
           {'id': 'devolver_llamada', 'titulo': 'Devolver una llamada', 'emoji': '↩️', 'pasos': 12},
           {'id': 'contestar_llamada', 'titulo': 'Contestar una llamada', 'emoji': '📲', 'pasos': 13},
         ],
