@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/gestures.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'services/api_service.dart';
 import 'seleccion_nivel.dart';
 import 'detalle_tutorial.dart';
 import 'tutorial_botones.dart';
 import 'mapa_lecciones.dart';
-import 'proximamente_screen.dart';
 import 'tutorial_pantalla_tactil.dart';
 import 'tutorial_moviendote.dart';
 import 'tutorial_configuraciones.dart';
@@ -22,9 +20,32 @@ import 'tutorial_grabar_video.dart';
 import 'tutorial_galeria.dart';
 import 'tutorial_borrar_fotos.dart';
 import 'tutorial_hacer_llamada.dart';
+import 'tutorial_nequi_conociendo.dart';
 import 'tutorial_guardar_contacto.dart';
 import 'tutorial_devolver_llamada.dart';
+import 'tutorial_nequi_meter_plata.dart';
 import 'tutorial_contestar_llamada.dart';
+import 'tutorial_whatsapp_conociendo.dart';
+import 'tutorial_whatsapp_responder.dart';
+import 'tutorial_whatsapp_audios.dart';
+import 'tutorial_whatsapp_fotos.dart';
+import 'tutorial_whatsapp_seguro.dart';
+import 'tutorial_correo_bandeja.dart';
+import 'tutorial_correo_adjuntos.dart';
+import 'tutorial_correo_responder.dart';
+import 'tutorial_correo_redactar.dart';
+import 'tutorial_mensajes_codigos.dart';
+import 'tutorial_mensajes_nuevo.dart';
+import 'tutorial_mensajes_organizar.dart';
+import 'tutorial_calendario_conociendo.dart';
+import 'tutorial_calendario_crear_evento.dart';
+import 'tutorial_calendario_recordatorios.dart';
+import 'tutorial_calendario_editar.dart';
+import 'tutorial_nequi_enviar_plata.dart';
+import 'tutorial_nequi_pedir_plata.dart';
+import 'tutorial_nequi_pagar_qr.dart';
+import 'tutorial_nequi_sacar_plata.dart';
+import 'tutorial_nequi_anti_estafas.dart';
 
 class TutorialApp {
   final String nombre;
@@ -53,7 +74,6 @@ class TutorialesScreen extends StatefulWidget {
 
 class _TutorialesScreenState extends State<TutorialesScreen> {
   String _nivelUsuario = 'basico';
-  int _navIndex = 0;
   int _tabSeleccionado = 0;
 
   late Future<Map<String, dynamic>?> _progresoFuture;
@@ -278,35 +298,236 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
     ),
 
     TutorialApp(
-      nombre: 'Whatsapp',
+      nombre: 'WhatsApp',
       imagenAsset: 'assets/icons/whatsapp.png',
       fondo: const Color(0xFFFFFFFF),
       nivel: 'intermedio',
+      icono: Icons.chat_rounded,
+      onTap: () => Navigator.push(context, MaterialPageRoute(
+        builder: (_) => MapaLeccionesScreen(
+          moduloTitulo: 'WhatsApp',
+          lecciones: [
+            LeccionMapa(
+              leccionId: 'whatsapp_conociendo',
+              titulo: 'Conociendo WhatsApp',
+              emoji: '💬',
+              builder: () => const TutorialWhatsappConociendoScreen(),
+              builderDesde: (paso) => TutorialWhatsappConociendoScreen(pasoInicial: paso),
+            ),
+            LeccionMapa(
+              leccionId: 'whatsapp_responder',
+              titulo: 'Responder un mensaje',
+              emoji: '✍️',
+              builder: () => const TutorialWhatsappResponderScreen(),
+              builderDesde: (paso) => TutorialWhatsappResponderScreen(pasoInicial: paso),
+            ),
+            LeccionMapa(
+              leccionId: 'whatsapp_audios',
+              titulo: 'Notas de voz',
+              emoji: '🎤',
+              builder: () => const TutorialWhatsappAudiosScreen(),
+              builderDesde: (paso) => TutorialWhatsappAudiosScreen(pasoInicial: paso),
+            ),
+            LeccionMapa(
+              leccionId: 'whatsapp_fotos',
+              titulo: 'Enviar y ver fotos',
+              emoji: '📸',
+              builder: () => const TutorialWhatsappFotosScreen(),
+              builderDesde: (paso) => TutorialWhatsappFotosScreen(pasoInicial: paso),
+            ),
+            LeccionMapa(
+              leccionId: 'whatsapp_seguro',
+              titulo: 'WhatsApp seguro',
+              emoji: '🛡️',
+              builder: () => const TutorialWhatsappSeguroScreen(),
+              builderDesde: (paso) => TutorialWhatsappSeguroScreen(pasoInicial: paso),
+            ),
+          ],
+        ),
+      )),
     ),
     TutorialApp(
-      nombre: 'Gmail// correo',
+      nombre: 'Correo electrónico',
       imagenAsset: 'assets/icons/gmail.png',
       fondo: const Color(0xFFFFFFFF),
       nivel: 'intermedio',
+      icono: Icons.mail_rounded,
+      onTap: () => Navigator.push(context, MaterialPageRoute(
+        builder: (_) => MapaLeccionesScreen(
+          moduloTitulo: 'Correo electrónico',
+          lecciones: [
+            LeccionMapa(
+              leccionId: 'correo_bandeja',
+              titulo: 'Conociendo tu correo',
+              emoji: '📧',
+              builder: () => const TutorialCorreoBandejaScreen(),
+              builderDesde: (paso) => TutorialCorreoBandejaScreen(pasoInicial: paso),
+            ),
+            LeccionMapa(
+              leccionId: 'correo_adjuntos',
+              titulo: 'Archivos adjuntos',
+              emoji: '📎',
+              builder: () => const TutorialCorreoAdjuntosScreen(),
+              builderDesde: (paso) => TutorialCorreoAdjuntosScreen(pasoInicial: paso),
+            ),
+            LeccionMapa(
+              leccionId: 'correo_responder',
+              titulo: 'Responder un correo',
+              emoji: '↩️',
+              builder: () => const TutorialCorreoResponderScreen(),
+              builderDesde: (paso) => TutorialCorreoResponderScreen(pasoInicial: paso),
+            ),
+            LeccionMapa(
+              leccionId: 'correo_redactar',
+              titulo: 'Escribir un correo nuevo',
+              emoji: '✉️',
+              builder: () => const TutorialCorreoRedactarScreen(),
+              builderDesde: (paso) => TutorialCorreoRedactarScreen(pasoInicial: paso),
+            ),
+          ],
+        ),
+      )),
     ),
     TutorialApp(
       nombre: 'Mensajes de tu celular',
       imagenAsset: 'assets/icons/mensajes.png',
       fondo: const Color(0xFFFFFFFF),
       nivel: 'intermedio',
+      icono: Icons.sms_rounded,
+      onTap: () => Navigator.push(context, MaterialPageRoute(
+        builder: (_) => MapaLeccionesScreen(
+          moduloTitulo: 'Mensajes de tu celular',
+          lecciones: [
+            LeccionMapa(
+              leccionId: 'mensajes_codigos',
+              titulo: 'Códigos de verificación',
+              emoji: '🔢',
+              builder: () => const TutorialMensajesCodigosScreen(),
+              builderDesde: (paso) => TutorialMensajesCodigosScreen(pasoInicial: paso),
+            ),
+            LeccionMapa(
+              leccionId: 'mensajes_nuevo',
+              titulo: 'Escribir un mensaje nuevo',
+              emoji: '🆕',
+              builder: () => const TutorialMensajesNuevoScreen(),
+              builderDesde: (paso) => TutorialMensajesNuevoScreen(pasoInicial: paso),
+            ),
+            LeccionMapa(
+              leccionId: 'mensajes_organizar',
+              titulo: 'Ordenar tus mensajes',
+              emoji: '🧹',
+              builder: () => const TutorialMensajesOrganizarScreen(),
+              builderDesde: (paso) => TutorialMensajesOrganizarScreen(pasoInicial: paso),
+            ),
+          ],
+        ),
+      )),
     ),
     TutorialApp(
       nombre: 'Calendario',
       imagenAsset: 'assets/icons/calendario.png',
       fondo: const Color(0xFFFFFFFF),
       nivel: 'intermedio',
+      icono: Icons.calendar_month_rounded,
+      onTap: () => Navigator.push(context, MaterialPageRoute(
+        builder: (_) => MapaLeccionesScreen(
+          moduloTitulo: 'Calendario',
+          lecciones: [
+            LeccionMapa(
+              leccionId: 'calendario_conociendo',
+              titulo: 'Conociendo el calendario',
+              emoji: '📅',
+              builder: () => const TutorialCalendarioConociendoScreen(),
+              builderDesde: (paso) => TutorialCalendarioConociendoScreen(pasoInicial: paso),
+            ),
+            LeccionMapa(
+              leccionId: 'calendario_crear_evento',
+              titulo: 'Agendar una cita',
+              emoji: '🩺',
+              builder: () => const TutorialCalendarioCrearEventoScreen(),
+              builderDesde: (paso) => TutorialCalendarioCrearEventoScreen(pasoInicial: paso),
+            ),
+            LeccionMapa(
+              leccionId: 'calendario_recordatorios',
+              titulo: 'Que el celular te avise',
+              emoji: '🔔',
+              builder: () => const TutorialCalendarioRecordatoriosScreen(),
+              builderDesde: (paso) => TutorialCalendarioRecordatoriosScreen(pasoInicial: paso),
+            ),
+            LeccionMapa(
+              leccionId: 'calendario_editar',
+              titulo: 'Cambiar o cancelar una cita',
+              emoji: '✏️',
+              builder: () => const TutorialCalendarioEditarScreen(),
+              builderDesde: (paso) => TutorialCalendarioEditarScreen(pasoInicial: paso),
+            ),
+          ],
+        ),
+      )),
     ),
     TutorialApp(
-      nombre: 'Nequi',
-      imagenAsset: 'assets/icons/nequi.png',
-      fondo: const Color(0xFFFFFFFF),
-      nivel: 'avanzado',
+  nombre: 'Nequi',
+  imagenAsset: 'assets/icons/nequi.png',
+  fondo: const Color(0xFFFFFFFF),
+  nivel: 'avanzado',
+  icono: Icons.account_balance_wallet_rounded,
+  onTap: () => Navigator.push(context, MaterialPageRoute(
+    builder: (_) => MapaLeccionesScreen(
+      moduloTitulo: 'Nequi',
+      lecciones: [
+        LeccionMapa(
+          leccionId: 'nequi_conociendo',
+          titulo: 'Conociendo Nequi',
+          emoji: '💜',
+          builder: () => const TutorialNequiConociendoScreen(),
+          builderDesde: (paso) => TutorialNequiConociendoScreen(pasoInicial: paso),
+        ),
+        LeccionMapa(
+        leccionId: 'nequi_meter_plata',
+        titulo: 'Meter plata a Nequi',
+        emoji: '💵',
+        builder: () => const TutorialNequiMeterPlataScreen(),
+        builderDesde: (paso) => TutorialNequiMeterPlataScreen(pasoInicial: paso),
+),
+        LeccionMapa(
+          leccionId: 'nequi_enviar_plata',
+          titulo: 'Enviar plata',
+          emoji: '💸',
+          builder: () => const TutorialNequiEnviarPlataScreen(),
+          builderDesde: (paso) => TutorialNequiEnviarPlataScreen(pasoInicial: paso),
+        ),
+        LeccionMapa(
+          leccionId: 'nequi_pedir_plata',
+          titulo: 'Pedir plata',
+          emoji: '🙋',
+          builder: () => const TutorialNequiPedirPlataScreen(),
+          builderDesde: (paso) => TutorialNequiPedirPlataScreen(pasoInicial: paso),
+        ),
+        LeccionMapa(
+          leccionId: 'nequi_pagar_qr',
+          titulo: 'Pagar con QR',
+          emoji: '📷',
+          builder: () => const TutorialNequiPagarQrScreen(),
+          builderDesde: (paso) => TutorialNequiPagarQrScreen(pasoInicial: paso),
+        ),
+        LeccionMapa(
+          leccionId: 'nequi_sacar_plata',
+          titulo: 'Sacar plata',
+          emoji: '🏧',
+          builder: () => const TutorialNequiSacarPlataScreen(),
+          builderDesde: (paso) => TutorialNequiSacarPlataScreen(pasoInicial: paso),
+        ),
+        LeccionMapa(
+          leccionId: 'nequi_anti_estafas',
+          titulo: 'Nequi seguro',
+          emoji: '🛡️',
+          builder: () => const TutorialNequiAntiEstafasScreen(),
+          builderDesde: (paso) => TutorialNequiAntiEstafasScreen(pasoInicial: paso),
+        ),
+      ],
     ),
+  )),
+),
   ];
 
   List<TutorialApp> get _appsFiltradas {
@@ -507,21 +728,35 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
     );
   }
 
+  // Nombre bonito del nivel para la tarjeta de progreso
+  String get _tituloNivel {
+    switch (_nivelUsuario) {
+      case 'intermedio':
+        return 'Nivel Intermedio';
+      case 'avanzado':
+        return 'Nivel Avanzado';
+      default:
+        return 'Nivel Básico';
+    }
+  }
+
   // Dashboard de progreso del usuario con todas sus lecciones
   Widget _buildMiProgreso() {
-    final modulos = [
+    final todosLosModulos = [
       {
         'titulo': '📱 Conociendo tu celular',
+        'nivel': 'basico',
         'lecciones': [
           {'id': 'conociendo_tu_celular', 'titulo': 'Botones físicos', 'emoji': '🔘', 'pasos': 7},
           {'id': 'pantalla_tactil', 'titulo': 'La pantalla táctil', 'emoji': '👆', 'pasos': 14},
           {'id': 'moviendote_celular', 'titulo': 'Moviendote en tu celular', 'emoji': '🧭', 'pasos': 10},
-          {'id': 'configuraciones_esenciales', 'titulo': 'Configuraciones esenciales', 'emoji': '⚙️', 'pasos': 36},
+          {'id': 'configuraciones_esenciales', 'titulo': 'Configuraciones esenciales', 'emoji': '⚙️', 'pasos': 34},
           {'id': 'bateria_y_cuidado', 'titulo': 'Batería y cuidado', 'emoji': '🔋', 'pasos': 14},
         ],
       },
       {
         'titulo': '🧭 Cómo navegar',
+        'nivel': 'basico',
         'lecciones': [
           {'id': 'reconociendo_iconos', 'titulo': 'Reconociendo íconos', 'emoji': '📱', 'pasos': 11},
           {'id': 'abrir_cerrar_apps', 'titulo': 'Abriendo y cerrando apps', 'emoji': '📲', 'pasos': 13},
@@ -532,6 +767,7 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
       },
       {
         'titulo': '📷 Cámara de tu celular',
+        'nivel': 'basico',
         'lecciones': [
           {'id': 'camara_tomar_foto', 'titulo': 'Tomar tu primera foto', 'emoji': '📷', 'pasos': 9},
           {'id': 'camara_selfie', 'titulo': 'Tomarte una selfie', 'emoji': '🤳', 'pasos': 10},
@@ -542,14 +778,69 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
       },
       {
         'titulo': '📞 Teléfono de tu celular',
+        'nivel': 'basico',
         'lecciones': [
           {'id': 'telefono_hacer_llamada', 'titulo': 'Hacer una llamada', 'emoji': '📞', 'pasos': 12},
-          {'id': 'telefono_guardar_contactos', 'titulo': 'Guardar un contacto', 'emoji': '👤', 'pasos': 13},
+          {'id': 'telefono_guardar_contacto', 'titulo': 'Guardar un contacto', 'emoji': '👤', 'pasos': 13},
           {'id': 'devolver_llamada', 'titulo': 'Devolver una llamada', 'emoji': '↩️', 'pasos': 12},
           {'id': 'contestar_llamada', 'titulo': 'Contestar una llamada', 'emoji': '📲', 'pasos': 13},
         ],
+       },
+      {
+        'titulo': '💜 Nequi',
+        'nivel': 'avanzado',
+        'lecciones': [
+          {'id': 'nequi_conociendo', 'titulo': 'Conociendo Nequi', 'emoji': '💜', 'pasos': 12},
+          {'id': 'nequi_meter_plata', 'titulo': 'Meter plata a Nequi', 'emoji': '💵', 'pasos': 13},
+          {'id': 'nequi_enviar_plata', 'titulo': 'Enviar plata', 'emoji': '💸', 'pasos': 14},
+          {'id': 'nequi_pedir_plata', 'titulo': 'Pedir plata', 'emoji': '🙋', 'pasos': 14},
+          {'id': 'nequi_pagar_qr', 'titulo': 'Pagar con QR', 'emoji': '📷', 'pasos': 13},
+          {'id': 'nequi_sacar_plata', 'titulo': 'Sacar plata', 'emoji': '🏧', 'pasos': 18},
+                    {'id': 'nequi_anti_estafas', 'titulo': 'Nequi seguro', 'emoji': '🛡️', 'pasos': 15},
+        ],
+      },
+      {
+        'titulo': '💬 WhatsApp',
+        'nivel': 'intermedio',
+        'lecciones': [
+          {'id': 'whatsapp_conociendo', 'titulo': 'Conociendo WhatsApp', 'emoji': '💬', 'pasos': 10},
+          {'id': 'whatsapp_responder', 'titulo': 'Responder un mensaje', 'emoji': '✍️', 'pasos': 11},
+          {'id': 'whatsapp_audios', 'titulo': 'Notas de voz', 'emoji': '🎤', 'pasos': 8},
+          {'id': 'whatsapp_fotos', 'titulo': 'Enviar y ver fotos', 'emoji': '📸', 'pasos': 11},
+          {'id': 'whatsapp_seguro', 'titulo': 'WhatsApp seguro', 'emoji': '🛡️', 'pasos': 9},
+        ],
+      },
+      {
+        'titulo': '📧 Correo electrónico',
+        'nivel': 'intermedio',
+        'lecciones': [
+          {'id': 'correo_bandeja', 'titulo': 'Conociendo tu correo', 'emoji': '📧', 'pasos': 11},
+          {'id': 'correo_adjuntos', 'titulo': 'Archivos adjuntos', 'emoji': '📎', 'pasos': 10},
+          {'id': 'correo_responder', 'titulo': 'Responder un correo', 'emoji': '↩️', 'pasos': 10},
+          {'id': 'correo_redactar', 'titulo': 'Escribir un correo nuevo', 'emoji': '✉️', 'pasos': 10},
+        ],
+      },
+      {
+        'titulo': '✉️ Mensajes de tu celular',
+        'nivel': 'intermedio',
+        'lecciones': [
+          {'id': 'mensajes_codigos', 'titulo': 'Códigos de verificación', 'emoji': '🔢', 'pasos': 9},
+          {'id': 'mensajes_nuevo', 'titulo': 'Escribir un mensaje nuevo', 'emoji': '🆕', 'pasos': 9},
+          {'id': 'mensajes_organizar', 'titulo': 'Ordenar tus mensajes', 'emoji': '🧹', 'pasos': 9},
+        ],
+      },
+      {
+        'titulo': '📅 Calendario',
+        'nivel': 'intermedio',
+        'lecciones': [
+          {'id': 'calendario_conociendo', 'titulo': 'Conociendo el calendario', 'emoji': '📅', 'pasos': 10},
+          {'id': 'calendario_crear_evento', 'titulo': 'Agendar una cita', 'emoji': '🩺', 'pasos': 10},
+          {'id': 'calendario_recordatorios', 'titulo': 'Que el celular te avise', 'emoji': '🔔', 'pasos': 10},
+          {'id': 'calendario_editar', 'titulo': 'Cambiar o cancelar una cita', 'emoji': '✏️', 'pasos': 10},
+        ],
       },
     ];
+    final modulos = todosLosModulos.where((m) => m['nivel'] == _nivelUsuario).toList();
 
     return FutureBuilder<Map<String, dynamic>?>(
       future: _progresoFuture,
@@ -623,8 +914,8 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Nivel Básico',
-                              style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+                          Text(_tituloNivel,
+                              style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
                           const SizedBox(height: 6),
                           Text('$totalCompletadas de $totalLecciones lecciones completadas',
                               style: TextStyle(color: Colors.white.withOpacity(0.85), fontSize: 14)),
@@ -842,14 +1133,6 @@ class _TutorialesScreenState extends State<TutorialesScreen> {
           ],
         ),
       ),
-    );
-  }
-
-  Widget _navIcon(IconData icon, int index) {
-    final selected = _navIndex == index;
-    return GestureDetector(
-      onTap: () => setState(() => _navIndex = index),
-      child: Icon(icon, size: 26, color: selected ? const Color(0xFF6B4EFF) : const Color(0xFFBBBBCC)),
     );
   }
 

@@ -385,7 +385,23 @@ class _TutorialConfiguracionesScreenState
     }
   }
 
+  // Evita que un doble toque en el boton salte un paso o cierre dos pantallas
+  bool _avanzando = false;
+
   Future<void> _avanzar() async {
+    if (_avanzando) return;
+    _avanzando = true;
+    try {
+      await _avanzarPaso();
+    } finally {
+      // Si la leccion ya se cerro el boton queda bloqueado
+      if (mounted && (ModalRoute.of(context)?.isCurrent ?? true)) {
+        _avanzando = false;
+      }
+    }
+  }
+
+  Future<void> _avanzarPaso() async {
     if (_mostrarFelicitacion) return;
 
     if (_pasos[_pasoActual]['tipo'] == 'accion_linterna' && _linternaEncendida) {
